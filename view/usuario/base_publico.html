@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduConnect{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== ESTILOS GLOBAIS PÚBLICOS ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        :root {
+            --azul-principal: #2c3e50; --azul-secundario: #3498db; --azul-hover: #2980b9;
+            --branco: #ffffff; --cinza-claro: #f8f9fa; --cinza-borda: #ddd;
+            --verde: #27ae60; --vermelho: #e74c3c;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--azul-principal);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--branco);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-menu a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-left: 20px;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .navbar-menu a:hover { color: var(--branco); }
+        .btn-nav {
+            background: var(--azul-secundario);
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white !important;
+        }
+        .btn-nav:hover { background: var(--azul-hover); }
+
+        /* CONTAINER CENTRAL */
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* FLASH MESSAGES */
+        .flash-messages {
+            position: fixed; top: 20px; right: 20px; z-index: 2000;
+        }
+        .flash-message {
+            background: white; padding: 15px 25px; border-radius: 8px; margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-left: 5px solid var(--azul-secundario);
+            animation: slideIn 0.3s ease;
+        }
+        .flash-message.erro { border-left-color: var(--vermelho); }
+        .flash-message.sucesso { border-left-color: var(--verde); }
+
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+    
+    {% block styles %}{% endblock %}
+    
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{{ url_for('boas_vindas') }}" class="navbar-brand">
+            <i class="fas fa-graduation-cap"></i> EduConnect
+        </a>
+        <div class="navbar-menu">
+            <a href="{{ url_for('boas_vindas') }}">Início</a>
+        </div>
+    </nav>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="main-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        &copy; 2025 EduConnect. Todos os direitos reservados.
+    </footer>
+
+    <script>
+        // Remove flash messages automaticamente
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(el => el.style.display = 'none');
+        }, 5000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

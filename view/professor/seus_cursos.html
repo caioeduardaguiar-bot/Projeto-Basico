@@ -1,0 +1,344 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Seus Cursos - Portal do Professor{% endblock %}
+
+{% block page_title %}Seus Cursos{% endblock %}
+
+{% block page_subtitle %}Gerencie todos os seus cursos{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para a página de cursos */
+    .cursos-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+    }
+    
+    .curso-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .curso-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .curso-cabecalho {
+        padding: 20px;
+        color: white;
+        position: relative;
+    }
+    
+    /* Cores baseadas na categoria do curso */
+    .curso-card:nth-child(1) .curso-cabecalho {
+        background: linear-gradient(135deg, #8e44ad, #9b59b6); /* Roxo para Python */
+    }
+    
+    .curso-card:nth-child(2) .curso-cabecalho {
+        background: linear-gradient(135deg, #3498db, #2980b9); /* Azul para Cálculo I */
+    }
+    
+    .curso-card:nth-child(3) .curso-cabecalho {
+        background: linear-gradient(135deg, #27ae60, #2ecc71); /* Verde para Banco de Dados */
+    }
+    
+    .curso-card:nth-child(4) .curso-cabecalho {
+        background: linear-gradient(135deg, #e67e22, #d35400); /* Laranja para Web Design */
+    }
+    
+    .curso-categoria {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 10px;
+        border-radius: 15px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .curso-cabecalho h3 {
+        font-size: 20px;
+        margin: 5px 0 0 0;
+        font-weight: 600;
+    }
+    
+    .curso-info {
+        padding: 20px;
+    }
+    
+    .curso-professor {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #7f8c8d;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    
+    .curso-professor i {
+        color: #e67e22;
+    }
+    
+    .curso-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .stat {
+        background: #f8f9fa;
+        padding: 15px 10px;
+        border-radius: 8px;
+    }
+    
+    .stat-numero {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 5px;
+    }
+    
+    .progresso-container {
+        margin-top: 15px;
+    }
+    
+    .progresso-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-bottom: 5px;
+    }
+    
+    .progresso-bar {
+        height: 8px;
+        background: #ecf0f1;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .progresso-fill {
+        height: 100%;
+        border-radius: 4px;
+    }
+    
+    /* Cores das barras de progresso */
+    .curso-card:nth-child(1) .progresso-fill {
+        background: #9b59b6; /* Roxo para Python */
+        width: 85%;
+    }
+    
+    .curso-card:nth-child(2) .progresso-fill {
+        background: #3498db; /* Azul para Cálculo I */
+        width: 65%;
+    }
+    
+    .curso-card:nth-child(3) .progresso-fill {
+        background: #27ae60; /* Verde para Banco de Dados */
+        width: 90%;
+    }
+    
+    .curso-card:nth-child(4) .progresso-fill {
+        background: #e67e22; /* Laranja para Web Design */
+        width: 75%;
+    }
+    
+    .curso-actions {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        text-align: center;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-outline {
+        background: white;
+        color: #2c3e50;
+        border: 1px solid #bdc3c7;
+    }
+    
+    .btn-outline:hover {
+        background: #f8f9fa;
+        border-color: #95a5a6;
+    }
+    
+    /* Header da página */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .btn-primary {
+        background: #e67e22;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: #d35400;
+    }
+    
+    /* Mensagem quando não há cursos */
+    .sem-cursos {
+        text-align: center;
+        padding: 50px 20px;
+        color: #7f8c8d;
+    }
+    
+    .sem-cursos i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #bdc3c7;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .cursos-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .curso-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 style="color: #2c3e50; margin-bottom: 5px;">Seus Cursos</h1>
+        <p style="color: #7f8c8d;">Gerencie todas as suas turmas e atividades</p>
+    </div>
+</div>
+
+{% if cursos %}
+<div class="cursos-container">
+    {% for curso in cursos %}
+    <div class="curso-card">
+        <div class="curso-cabecalho">
+            <span class="curso-categoria">{{ curso.categoria }}</span>
+            <h3>{{ curso.nome }}</h3>
+        </div>
+        
+        <div class="curso-info">
+            <div class="curso-professor">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Professor: {{ curso.professor }}</span>
+            </div>
+            
+            <div class="curso-stats">
+                <div class="stat">
+                    <span class="stat-numero">{{ curso.alunos }}</span>
+                    <span class="stat-label">Alunos</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-numero">{{ curso.atividades }}</span>
+                    <span class="stat-label">Atividades</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-numero">{{ curso.progresso }}%</span>
+                    <span class="stat-label">Progresso</span>
+                </div>
+            </div>
+            
+            <div class="progresso-container">
+                <div class="progresso-label">
+                    <span>progresso do curso</span>
+                    <span>{{ curso.progresso }}%</span>
+                </div>
+                <div class="progresso-bar">
+                    <div class="progresso-fill" style="width: {{ curso.progresso }} %"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="curso-actions">
+            <a href="{{ url_for('detalhes_cursos_professor', curso_id=curso.id) }}" class="btn btn-outline">
+                <i class="fas fa-info-circle"></i>
+                Detalhes
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="sem-cursos">
+    <i class="fas fa-book-open"></i>
+    <h3>Nenhum curso encontrado</h3>
+    <p>Você ainda não tem cursos cadastrados. Crie seu primeiro curso!</p>
+    <a href="#" class="btn btn-primary" style="margin-top: 20px;">
+        <i class="fas fa-plus"></i> Criar Primeiro Curso
+    </a>
+</div>
+{% endif %}
+
+<script>
+    // Adicionar funcionalidade aos botões
+    document.addEventListener('DOMContentLoaded', function() {
+        const botoes = document.querySelectorAll('.btn');
+        botoes.forEach(botao => {
+            botao.addEventListener('click', function(e) {
+                if (!this.href) {
+                    e.preventDefault();
+                    alert('Funcionalidade em desenvolvimento!');
+                }
+            });
+        });
+        
+        // Adicionar efeito de hover nas estatísticas
+        const stats = document.querySelectorAll('.stat');
+        stats.forEach(stat => {
+            stat.addEventListener('mouseenter', function() {
+                const numero = this.querySelector('.stat-numero');
+                const valor = parseInt(numero.textContent);
+                numero.style.transform = 'scale(1.1)';
+                numero.style.transition = 'transform 0.2s';
+            });
+            
+            stat.addEventListener('mouseleave', function() {
+                const numero = this.querySelector('.stat-numero');
+                numero.style.transform = 'scale(1)';
+            });
+        });
+    });
+
+    
+</script>
+{% endblock %}

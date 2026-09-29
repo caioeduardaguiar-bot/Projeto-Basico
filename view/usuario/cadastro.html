@@ -1,0 +1,153 @@
+{% extends "usuario/base_publico.html" %}
+
+{% block title %}Cadastro - EduConnect{% endblock %}
+
+{% block styles %}
+<style>
+    .auth-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 500px;
+    }
+    .auth-title {
+        text-align: center;
+        color: var(--azul-principal);
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+    .form-control {
+        width: 100%; padding: 12px; border: 1px solid var(--cinza-borda);
+        border-radius: 8px; font-size: 1rem; transition: 0.3s;
+    }
+    .form-control:focus { border-color: var(--azul-secundario); outline: none; }
+    
+    .btn-submit {
+        width: 100%; padding: 12px; background: var(--azul-secundario);
+        color: white; border: none; border-radius: 8px; font-size: 1.1rem;
+        cursor: pointer; transition: 0.3s; font-weight: 600;
+    }
+    .btn-submit:hover { background: var(--azul-hover); }
+
+    /* Abas de Seleção */
+    .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+    .tab {
+        flex: 1; text-align: center; padding: 15px; cursor: pointer;
+        color: #777; font-weight: 600; transition: 0.3s;
+    }
+    .tab.active { color: var(--azul-secundario); border-bottom: 3px solid var(--azul-secundario); }
+    
+    .form-section { display: none; }
+    .form-section.active { display: block; animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <h2 class="auth-title">Crie sua Conta</h2>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('aluno')">Aluno</div>
+        <div class="tab" onclick="switchTab('professor')">Professor</div>
+    </div>
+
+    <form action="{{ url_for('cadastro') }}" method="POST" id="form-aluno" class="form-section active">
+        <input type="hidden" name="tipo" value="aluno">
+        
+        <div class="form-group">
+            <label class="form-label">Nome Completo</label>
+            <input type="text" name="nomealuno" class="form-control" required placeholder="Seu nome">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Apelido (Usuário)</label>
+            <input type="text" name="apelidoaluno" class="form-control" required placeholder="Como quer ser chamado">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="emailaluno" class="form-control" required placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <input type="tel" name="telefonealuno" class="form-control" required placeholder="(99) 99999-9999">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" name="senhaaluno" class="form-control" required placeholder="Mínimo 4 caracteres">
+        </div>
+        <button type="submit" class="btn-submit">Cadastrar como Aluno</button>
+    </form>
+
+    <form action="{{ url_for('cadastro') }}" method="POST" id="form-professor" class="form-section">
+        <input type="hidden" name="tipo" value="professor">
+        
+        <div class="form-group">
+            <label class="form-label">Nome Completo</label>
+            <input type="text" name="nomeprof" class="form-control" placeholder="Prof. Nome">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Apelido (Usuário)</label>
+            <input type="text" name="apelidoprof" class="form-control" placeholder="Usuário para login">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email Institucional</label>
+            <input type="email" name="emailprof" class="form-control" placeholder="prof@escola.com">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <input type="tel" name="telefoneprof" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Código do Diploma/Certificado</label>
+            <input type="text" name="codigo_certificado" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Especializações</label>
+            <input type="text" name="especializacoes" class="form-control" placeholder="Ex: Matemática, Física...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" name="senhaprof" class="form-control" placeholder="Mínimo 4 caracteres">
+        </div>
+        <button type="submit" class="btn-submit">Cadastrar como Professor</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <p>Já tem uma conta? <a href="{{ url_for('login') }}" style="color: var(--azul-secundario); font-weight: bold;">Faça Login</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tipo) {
+        // Atualiza estilo das abas
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Mostra o formulário correto
+        document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+        document.getElementById('form-' + tipo).classList.add('active');
+        
+        // Remove 'required' dos campos ocultos para não impedir o envio
+        if(tipo === 'aluno') {
+            document.querySelectorAll('#form-professor input').forEach(i => i.removeAttribute('required'));
+            document.querySelectorAll('#form-aluno input').forEach(i => {
+                if(i.name !== 'tipo') i.setAttribute('required', '');
+            });
+        } else {
+            document.querySelectorAll('#form-aluno input').forEach(i => i.removeAttribute('required'));
+            document.querySelectorAll('#form-professor input').forEach(i => {
+                // Campos opcionais do professor
+                if(!['codigo_certificado', 'especializacoes'].includes(i.name) && i.name !== 'tipo') {
+                    i.setAttribute('required', '');
+                }
+            });
+        }
+     }
+</script>
+{% endblock %}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal do Aluno{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== ESTILOS GLOBAIS (BASE) ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        :root {
+            --azul-principal: #2c3e50;
+            --azul-secundario: #3498db;
+            --azul-claro: #ecf0f1;
+            --azul-hover: #2980b9;
+            --cinza-escuro: #34495e;
+            --cinza-medio: #7f8c8d;
+            --cinza-claro: #bdc3c7;
+            --branco: #ffffff;
+            --verde: #27ae60;
+            --laranja: #e67e22;
+            --vermelho: #e74c3c;
+            --roxo: #9b59b6;
+            --amarelo: #f1c40f;
+            --turquesa: #1abc9c;
+            --sombra: rgba(0, 0, 0, 0.1);
+            --gradiente-azul: linear-gradient(135deg, #3498db, #2c3e50);
+        }
+
+        /* TEMA ESCURO (Suporte via CSS) */
+        [data-tema="escuro"] {
+            --azul-principal: #1a1a2e; --azul-secundario: #0f3460; --azul-claro: #16213e;
+            --cinza-escuro: #0f0f1a; --branco: #e6e6e6; --cinza-medio: #7f8c8d;
+            --cinza-claro: #4a4a4a; background-color: #121212; color: #e6e6e6;
+        }
+        [data-tema="escuro"] .conteudo-principal { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); }
+        [data-tema="escuro"] .card, [data-tema="escuro"] .curso-card, [data-tema="escuro"] .notificacoes-list, 
+        [data-tema="escuro"] .config-section, [data-tema="escuro"] .resumo-card { 
+            background: #2d2d2d; border: 1px solid #404040; 
+        }
+
+        body { background-color: #f8f9fa; color: #333; display: flex; min-height: 100vh; }
+
+        /* MENU LATERAL */
+        .menu-aluno {
+            width: 280px; background: var(--azul-principal); position: fixed; left: 0; top: 0; bottom: 0;
+            box-shadow: 5px 0 15px var(--sombra); z-index: 1000; transition: all 0.3s ease; overflow-y: auto;
+        }
+        .menu-header { padding: 30px 20px; background: var(--cinza-escuro); border-bottom: 3px solid var(--azul-secundario); text-align: center; }
+        .aluno-avatar {
+            width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%;
+            background: var(--gradiente-azul); display: flex; align-items: center; justify-content: center;
+            border: 3px solid var(--azul-secundario); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .aluno-avatar span { color: var(--branco); font-size: 2rem; font-weight: bold; }
+        .menu-header h2 { color: var(--branco); font-size: 1.5rem; margin: 10px 0 5px; font-weight: 600; }
+        .menu-header p { color: var(--cinza-claro); font-size: 0.9rem; margin: 2px 0; }
+        
+        .menu-nav { padding: 25px 0; }
+        .menu-item {
+            display: flex; align-items: center; padding: 16px 25px; color: var(--azul-claro);
+            text-decoration: none; transition: all 0.3s ease; border-left: 4px solid transparent; margin: 3px 0;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(52, 152, 219, 0.1); border-left: 4px solid var(--azul-secundario); color: var(--branco);
+        }
+        .menu-item.active { background: rgba(52, 152, 219, 0.2); font-weight: 500; }
+        .menu-item i { font-size: 1.2rem; margin-right: 15px; width: 24px; text-align: center; }
+        
+        .menu-divider { height: 1px; background: linear-gradient(to right, transparent, var(--cinza-medio), transparent); margin: 20px 25px; }
+        .menu-footer { padding: 20px; text-align: center; border-top: 1px solid var(--cinza-medio); position: absolute; bottom: 0; width: 100%; background: var(--cinza-escuro); }
+        .btn-sair {
+            background: linear-gradient(135deg, #e74c3c, #c0392b); color: var(--branco); border: none;
+            padding: 12px 25px; border-radius: 25px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .btn-sair:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
+
+        /* CONTEÚDO PRINCIPAL */
+        .conteudo-principal { margin-left: 280px; padding: 30px; width: 100%; min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--cinza-claro); }
+        .welcome-message h1 { color: var(--azul-principal); font-size: 2rem; margin-bottom: 5px; }
+        .welcome-message p { color: var(--cinza-medio); font-size: 1rem; }
+        .data-hora {
+            background: var(--branco); padding: 12px 20px; border-radius: 10px;
+            box-shadow: 0 4px 6px var(--sombra); font-weight: 600; color: var(--azul-principal);
+            border-left: 4px solid var(--azul-secundario);
+        }
+
+        /* FLASH MESSAGES */
+        .flash-messages { position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px; }
+        .flash-message {
+            background: var(--branco); padding: 15px 20px; border-radius: 8px; margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); border-left: 4px solid var(--azul-secundario);
+            animation: slideInRight 0.3s ease forwards;
+        }
+        .flash-message.sucesso { border-left-color: var(--verde); }
+        .flash-message.erro { border-left-color: var(--vermelho); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Responsividade Básica */
+        @media (max-width: 1024px) { .menu-aluno { width: 250px; } .conteudo-principal { margin-left: 250px; } }
+        @media (max-width: 768px) {
+            .menu-aluno { width: 100%; height: auto; position: relative; }
+            .conteudo-principal { margin-left: 0; }
+            .menu-nav { display: flex; flex-wrap: wrap; justify-content: center; }
+            .menu-item { flex-direction: column; padding: 10px; font-size: 0.9rem; }
+            .menu-item i { margin-right: 0; margin-bottom: 5px; }
+            .menu-footer { position: relative; }
+            .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+
+        .menu-header h2 {
+            color: var(--branco);
+            font-size: 1.5rem;
+            margin: 10px 0 5px;
+            font-weight: 600;
+        }
+    </style>
+    
+    {% block styles %}{% endblock %}
+    
+</head>
+<body>
+
+    <nav class="menu-aluno">
+        <div class="menu-header">
+            <div class="aluno-avatar">
+                <span>{{ session.usuario[:2]|upper if session.usuario else 'AL' }}</span>
+            </div>
+
+            <!-- No base_aluno.html, procure algo assim e atualize: -->
+                <div class="usuario-info">
+                    <h2>Bem-vindo, {{ session.usuario or 'Aluno' }}!</h2>
+                    <p>ID: {{ session.id_aluno }}</p>
+                </div>
+        </div>
+
+        <div class="menu-nav">
+            <a href="{{ url_for('home_aluno') }}" class="menu-item {% if request.endpoint == 'home_aluno' %}active{% endif %}">
+                <i class="fas fa-home"></i> <span>Início</span>
+            </a>
+            
+            <a href="{{ url_for('cursos_aluno') }}" class="menu-item {% if request.endpoint == 'cursos_aluno' %}active{% endif %}">
+                <i class="fas fa-book"></i> <span>Meus Cursos</span>
+            </a>
+            
+            <a href="{{ url_for('calendario_aluno') }}" class="menu-item {% if request.endpoint == 'calendario_aluno' %}active{% endif %}">
+                <i class="fas fa-calendar-alt"></i> <span>Calendário</span>
+            </a>
+            
+            <div class="menu-divider"></div>
+            
+            <a href="{{ url_for('desempenho_aluno') }}" class="menu-item {% if request.endpoint == 'desempenho_aluno' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> <span>Desempenho</span>
+            </a>
+            
+            <a href="{{ url_for('notificacoes_aluno') }}" class="menu-item {% if request.endpoint == 'notificacoes_aluno' %}active{% endif %}">
+                <i class="fas fa-bell"></i> <span>Notificações</span>
+            </a>
+            
+            <a href="{{ url_for('perfil_aluno') }}" class="menu-item {% if request.endpoint == 'perfil_aluno' %}active{% endif %}">
+                <i class="fas fa-user"></i> <span>Meu Perfil</span>
+            </a>
+            
+            <a href="{{ url_for('configuracoes_aluno') }}" class="menu-item {% if request.endpoint == 'configuracoes_aluno' %}active{% endif %}">
+                <i class="fas fa-cog"></i> <span>Configurações</span>
+            </a>
+        </div>
+
+        <div class="menu-footer">
+            <a href="{{ url_for('logout') }}" class="btn-sair">
+                <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+            </a>
+        </div>
+    </nav>
+
+    <main class="conteudo-principal">
+        <div class="top-bar">
+            <div class="welcome-message">
+                <h1>{% block page_title %}Portal do Aluno{% endblock %}</h1>
+                <p>{% block page_subtitle %}Bem-vindo ao seu ambiente acadêmico{% endblock %}</p>
+            </div>
+            <div class="data-hora" id="dataHora">--/--/---- --:--</div>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        // Atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+            const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('dataHora').textContent = agora.toLocaleDateString('pt-BR', opcoes);
+        }
+        setInterval(atualizarDataHora, 1000);
+        atualizarDataHora();
+
+        // Fechar flash messages automaticamente
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(msg => {
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 5000);
+    </script>
+
+    <script src="{{ url_for('aplicar_configuracoes') }}"></script>
+    
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

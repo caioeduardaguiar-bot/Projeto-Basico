@@ -1,0 +1,715 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Meu Perfil - Professor{% endblock %}
+
+{% block page_title %}Meu Perfil{% endblock %}
+{% block page_subtitle %}Gerencie suas informações pessoais e configurações{% endblock %}
+
+{% block content %}
+<div class="perfil-container">
+    <div class="perfil-layout">
+        <!-- Coluna Esquerda - Informações do Perfil -->
+        <div class="perfil-info">
+            <div class="perfil-card">
+                <div class="perfil-header">
+                    <div class="perfil-avatar">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="perfil-titulo">
+                        <h3>{{ session.usuario }}</h3>
+                        <p>Professor</p>
+                    </div>
+                    <button class="btn-editar" onclick="editarPerfil()">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                </div>
+
+                <div class="perfil-detalhes">
+                    <div class="info-item">
+                        <label><i class="fas fa-envelope"></i> E-mail</label>
+                        <p id="email-professor">Vazio</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label><i class="fas fa-phone"></i> Telefone</label>
+                        <p id="telefone-professor">Vazio</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label><i class="fas fa-graduation-cap"></i>Especializações</label>
+                        <p id="formacao-professor">Vazio</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label><i class="fas fa-calendar-alt"></i> Cadastro</label>
+                        <p id="data-cadastro">12/12/2025</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h4><i class="fas fa-chart-line"></i> Estatísticas</h4>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-numero" id="total-cursos">4</div>
+                        <div class="stat-label">Cursos Ativos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-numero" id="total-alunos">1</div>
+                        <div class="stat-label">Alunos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-numero" id="total-aulas">100</div>
+                        <div class="stat-label">Aulas/Mês</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-numero" id="avaliacao">4.8</div>
+                        <div class="stat-label">Avaliação</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita - Configurações e Especializações -->
+        <div class="perfil-config">
+            <div class="config-card">
+                <h4><i class="fas fa-cog"></i> Configurações</h4>
+                
+                <div class="config-item">
+                    <label>
+                        <input type="checkbox" id="notificacoes-email" checked>
+                        Notificações por E-mail
+                    </label>
+                </div>
+                
+                <div class="config-item">
+                    <label>
+                        <input type="checkbox" id="modo-noturno">
+                        Modo Noturno
+                    </label>
+                </div>
+                
+                <div class="config-item">
+                    <label>
+                        <input type="checkbox" id="backup-automatico" checked>
+                        Backup Automático
+                    </label>
+                </div>
+                
+                <div class="config-item">
+                    <label for="tema-interface">Tema da Interface</label>
+                    <select id="tema-interface">
+                        <option value="claro">Claro</option>
+                        <option value="escuro">Escuro</option>
+                        <option value="auto">Automático</option>
+                    </select>
+                </div>
+                
+                <button class="btn-salvar" onclick="salvarConfiguracoes()">
+                    <i class="fas fa-save"></i> Salvar Configurações
+                </button>
+            </div>
+
+            <div class="especializacoes-card">
+                <h4><i class="fas fa-certificate"></i> Especializações</h4>
+                <div class="tags-container">
+                    <span class="tag">Matemática</span>
+                    <span class="tag">Física</span>
+                    <span class="tag">Programação</span>
+                    <span class="tag">Educação Online</span>
+                    <button class="tag-add" onclick="adicionarEspecializacao()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <textarea id="nova-especializacao" placeholder="Adicionar nova especialização..." style="display: none;"></textarea>
+            </div>
+
+            <div class="alterar-senha-card">
+                <h4><i class="fas fa-lock"></i> Alterar Senha</h4>
+                <div class="senha-form">
+                    <input type="password" id="senha-atual" placeholder="Senha Atual">
+                    <input type="password" id="nova-senha" placeholder="Nova Senha">
+                    <input type="password" id="confirmar-senha" placeholder="Confirmar Nova Senha">
+                    <button class="btn-alterar-senha" onclick="alterarSenha()">
+                        <i class="fas fa-key"></i> Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para o perfil */
+    .perfil-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .perfil-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    /* Cartões do perfil */
+    .perfil-card,
+    .stats-card,
+    .config-card,
+    .especializacoes-card,
+    .alterar-senha-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
+
+    /* Cabeçalho do perfil */
+    .perfil-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .perfil-avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--cor-destaque), #d35400);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+    }
+
+    .perfil-titulo {
+        flex-grow: 1;
+    }
+
+    .perfil-titulo h3 {
+        color: var(--cinza-texto);
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+
+    .perfil-titulo p {
+        color: var(--cor-destaque);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .btn-editar {
+        background: var(--cor-destaque);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .btn-editar:hover {
+        background: #d35400;
+        transform: translateY(-2px);
+    }
+
+    /* Informações detalhadas */
+    .perfil-detalhes {
+        display: grid;
+        gap: 20px;
+    }
+
+    .info-item {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        align-items: center;
+    }
+
+    .info-item label {
+        color: #666;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .info-item p {
+        color: var(--cinza-texto);
+        font-size: 1rem;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 3px solid var(--cor-destaque);
+    }
+
+    /* Estatísticas */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 15px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        transition: transform 0.3s;
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    }
+
+    .stat-numero {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--cor-destaque);
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Configurações */
+    .config-item {
+        margin-bottom: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .config-item label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--cinza-texto);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .config-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--cor-destaque);
+    }
+
+    .config-item select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-top: 5px;
+        background: white;
+        color: var(--cinza-texto);
+    }
+
+    .btn-salvar {
+        width: 100%;
+        background: var(--cor-menu-bg);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s;
+    }
+
+    .btn-salvar:hover {
+        background: #1a252f;
+    }
+
+    /* Especializações */
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .tag {
+        background: var(--cor-destaque);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .tag-add {
+        background: #3498db;
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #nova-especializacao {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    /* Alterar senha */
+    .senha-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .senha-form input {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .btn-alterar-senha {
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s;
+    }
+
+    .btn-alterar-senha:hover {
+        background: #219653;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1024px) {
+        .perfil-layout {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-item {
+            grid-template-columns: 1fr;
+            gap: 5px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .perfil-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    /* Estilos para o perfil (adicione estas classes também) */
+    .campo-editavel {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--cor-destaque);
+        border-radius: 4px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+    
+    .campo-editavel:focus {
+        outline: none;
+        border-color: #d35400;
+        box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+    }
+    
+    .flash-msg.sucesso {
+        background: #27ae60 !important;
+    }
+    
+    .flash-msg.erro {
+        background: #e74c3c !important;
+    }
+
+</style>
+
+<script>
+    // Funções JavaScript para o perfil (ATUALIZADAS)
+    let modoEdicao = false;
+    
+    function editarPerfil() {
+        if (modoEdicao) {
+            salvarPerfil();
+            return;
+        }
+        
+        const camposEditaveis = [
+            'email-professor',
+            'telefone-professor',
+            'formacao-professor',
+            'data-cadastro'
+        ];
+        
+        camposEditaveis.forEach(campoId => {
+            const elemento = document.getElementById(campoId);
+            const valorAtual = elemento.textContent;
+            
+            elemento.innerHTML = `
+                <input type="text" 
+                       id="edit-${campoId}"
+                       value="${valorAtual}" 
+                       class="campo-editavel">
+            `;
+        });
+        
+        // Mudar botão para "Salvar"
+        document.querySelector('.btn-editar').innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+        modoEdicao = true;
+    }
+
+    async function salvarPerfil() {
+        // Coleta dados dos campos editáveis
+        const dados = {
+            email: document.getElementById('edit-email-professor')?.value || 
+                   document.getElementById('email-professor')?.textContent,
+            telefone: document.getElementById('edit-telefone-professor')?.value || 
+                     document.getElementById('telefone-professor')?.textContent,
+            formacao: document.getElementById('edit-formacao-professor')?.value || 
+                     document.getElementById('formacao-professor')?.textContent
+        };
+        
+        try {
+            const response = await fetch('/perfil_professor/editar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            const resultado = await response.json();
+            
+            if (resultado.sucesso) {
+                // Atualiza a interface com os novos valores
+                document.getElementById('email-professor').textContent = dados.email;
+                document.getElementById('telefone-professor').textContent = dados.telefone;
+                document.getElementById('formacao-professor').textContent = dados.formacao;
+                
+                // Reverter para modo visualização
+                modoEdicao = false;
+                document.querySelector('.btn-editar').innerHTML = '<i class="fas fa-edit"></i> Editar';
+                document.querySelector('.btn-editar').onclick = editarPerfil;
+                
+                // Mostra mensagem de sucesso
+                mostrarMensagem('Perfil atualizado com sucesso!', 'sucesso');
+            } else {
+                mostrarMensagem(resultado.erro || 'Erro ao atualizar perfil', 'erro');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarMensagem('Erro ao conectar com o servidor', 'erro');
+        }
+    }
+
+    async function adicionarEspecializacao() {
+        const textarea = document.getElementById('nova-especializacao');
+        const tagsContainer = document.querySelector('.tags-container');
+        
+        textarea.style.display = 'block';
+        textarea.focus();
+        
+        textarea.onkeypress = async function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const novaTag = textarea.value.trim();
+                
+                if (novaTag) {
+                    // Coleta todas as tags atuais
+                    const tags = Array.from(document.querySelectorAll('.tag:not(.tag-add)'))
+                                     .map(tag => tag.textContent);
+                    tags.push(novaTag);
+                    
+                    // Envia para o servidor
+                    try {
+                        const response = await fetch('/perfil_professor/especializacoes', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ especializacoes: tags })
+                        });
+                        
+                        const resultado = await response.json();
+                        
+                        if (resultado.sucesso) {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.className = 'tag';
+                            tagSpan.textContent = novaTag;
+                            
+                            tagsContainer.insertBefore(tagSpan, document.querySelector('.tag-add'));
+                            textarea.value = '';
+                            textarea.style.display = 'none';
+                            
+                            mostrarMensagem('Especialização adicionada!', 'sucesso');
+                        } else {
+                            mostrarMensagem(resultado.erro || 'Erro ao adicionar especialização', 'erro');
+                        }
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        mostrarMensagem('Erro ao conectar com o servidor', 'erro');
+                    }
+                }
+            }
+        };
+    }
+
+    async function alterarSenha() {
+        const senhaAtual = document.getElementById('senha-atual').value;
+        const novaSenha = document.getElementById('nova-senha').value;
+        const confirmarSenha = document.getElementById('confirmar-senha').value;
+        
+        try {
+            const response = await fetch('/perfil_professor/alterar_senha', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    senha_atual: senhaAtual,
+                    nova_senha: novaSenha,
+                    confirmar_senha: confirmarSenha
+                })
+            });
+            
+            const resultado = await response.json();
+            
+            if (resultado.sucesso) {
+                // Limpa os campos
+                document.getElementById('senha-atual').value = '';
+                document.getElementById('nova-senha').value = '';
+                document.getElementById('confirmar-senha').value = '';
+                
+                mostrarMensagem('Senha alterada com sucesso!', 'sucesso');
+            } else {
+                mostrarMensagem(resultado.erro || 'Erro ao alterar senha', 'erro');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarMensagem('Erro ao conectar com o servidor', 'erro');
+        }
+    }
+
+    async function salvarConfiguracoes() {
+        const notificacoesEmail = document.getElementById('notificacoes-email').checked;
+        const modoNoturno = document.getElementById('modo-noturno').checked;
+        const backupAutomatico = document.getElementById('backup-automatico').checked;
+        const temaInterface = document.getElementById('tema-interface').value;
+        
+        // Salva no localStorage para demonstração
+        localStorage.setItem('config_professor', JSON.stringify({
+            notificacoesEmail,
+            modoNoturno,
+            backupAutomatico,
+            temaInterface
+        }));
+        
+        // Em produção, enviaria para o servidor
+        // await fetch('/configuracoes/salvar', { method: 'POST', ... })
+        
+        mostrarMensagem('Configurações salvas com sucesso!', 'sucesso');
+    }
+
+    function mostrarMensagem(texto, tipo) {
+        // Cria ou atualiza mensagem flash
+        const flashDiv = document.createElement('div');
+        flashDiv.className = `flash-msg ${tipo}`;
+        flashDiv.textContent = texto;
+        flashDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: ${tipo === 'sucesso' ? '#27ae60' : '#e74c3c'};
+            color: white;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(flashDiv);
+        
+        setTimeout(() => {
+            flashDiv.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => flashDiv.remove(), 300);
+        }, 3000);
+    }
+
+    // Carregar configurações salvas
+    window.onload = function() {
+        const configSalvas = localStorage.getItem('config_professor');
+        
+        if (configSalvas) {
+            const config = JSON.parse(configSalvas);
+            
+            document.getElementById('notificacoes-email').checked = config.notificacoesEmail;
+            document.getElementById('modo-noturno').checked = config.modoNoturno;
+            document.getElementById('backup-automatico').checked = config.backupAutomatico;
+            document.getElementById('tema-interface').value = config.temaInterface;
+        }
+        
+        // Adiciona estilos CSS para animações
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .campo-editavel {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid var(--cor-destaque);
+                border-radius: 4px;
+                font-size: 1rem;
+                font-family: inherit;
+            }
+        `;
+        document.head.appendChild(style);
+    };
+</script>
+{% endblock %}

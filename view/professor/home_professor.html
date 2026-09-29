@@ -1,0 +1,54 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Início - Professor{% endblock %}
+{% block page_title %}Visão Geral{% endblock %}
+{% block page_subtitle %}Bem-vindo ao sistema de gestão escolar{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+    .card-dash { 
+        background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-bottom: 4px solid var(--cor-destaque); transition: transform 0.3s;
+    }
+    .card-dash:hover { transform: translateY(-5px); }
+    .card-dash h3 { font-size: 2.5rem; color: var(--cor-destaque); margin-bottom: 10px; }
+    .card-dash p { color: #666; font-weight: 500; }
+    .card-icon { float: right; font-size: 2rem; color: #eee; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <div class="card-dash">
+        <i class="fas fa-user-graduate card-icon"></i>
+        <h3>--</h3> <p>Alunos Ativos</p>
+    </div>
+    
+    <div class="card-dash" style="border-bottom-color: #27ae60;">
+        <i class="fas fa-book card-icon"></i>
+        <h3>0</h3>
+        <p>Turmas</p>
+    </div>
+
+    <div class="card-dash" style="border-bottom-color: #3498db;">
+        <i class="fas fa-tasks card-icon"></i>
+        <h3>0</h3>
+        <p>Atividades Pendentes</p>
+    </div>
+</div>
+
+
+
+<div style="margin-top: 40px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h3>Ações Rápidas</h3>
+    <div style="margin-top: 20px; display: flex; gap: 15px;">
+        <a href="{{ url_for('lista_alunos') }}" style="padding: 10px 20px; background: var(--cor-menu-bg); color: white; text-decoration: none; border-radius: 5px;">
+            <i class="fas fa-list"></i> Ver Lista de Alunos
+        </a>
+        <a href="#" style="padding: 10px 20px; background: #27ae60; color: white; text-decoration: none; border-radius: 5px;">
+            <i class="fas fa-plus"></i> Lançar Notas
+        </a>
+    </div>
+</div>
+{% endblock %}

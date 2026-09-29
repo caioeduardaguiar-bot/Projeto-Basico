@@ -1,0 +1,380 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Calendário do Professor{% endblock %}
+
+{% block page_title %}Calendário Acadêmico{% endblock %}
+{% block page_subtitle %}Gerencie suas aulas, provas e eventos{% endblock %}
+
+{% block content %}
+<div class="calendario-container">
+    <div class="calendario-header">
+        <div class="calendario-controles">
+            <button id="btnMesAnterior"><i class="fas fa-chevron-left"></i></button>
+            <h3 id="mesAtual">Dezembro 2025</h3>
+            <button id="btnProxMes"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button id="btnNovoEvento" class="btn-destaque">
+            <i class="fas fa-plus"></i> Novo Evento
+        </button>
+    </div>
+
+    <div class="calendario-grid">
+        <div class="dias-semana">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+        </div>
+        
+        <div class="dias-calendario" id="diasCalendario">
+            <!-- Os dias serão gerados por JavaScript -->
+        </div>
+    </div>
+
+    <div class="eventos-lista">
+        <h3><i class="fas fa-bell"></i> Próximos Eventos</h3>
+        
+        <div class="evento-item">
+            <div class="evento-data">
+                <span class="evento-dia">15</span>
+                <span class="evento-mes">Dez</span>
+            </div>
+            <div class="evento-info">
+                <h4>Prova de Cálculo I</h4>
+                <p class="evento-turma">Turma: MAT101</p>
+                <p class="evento-horario"><i class="far fa-clock"></i> 14:00 - 16:00</p>
+            </div>
+            <div class="evento-acoes">
+                <button class="btn-icone"><i class="fas fa-edit"></i></button>
+                <button class="btn-icone btn-excluir"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+
+        <div class="evento-item">
+            <div class="evento-data" style="background: #e67e22;">
+                <span class="evento-dia">18</span>
+                <span class="evento-mes">Dez</span>
+            </div>
+            <div class="evento-info">
+                <h4>Aula de Revisão</h4>
+                <p class="evento-turma">Turma: FIS201</p>
+                <p class="evento-horario"><i class="far fa-clock"></i> 10:00 - 12:00</p>
+            </div>
+            <div class="evento-acoes">
+                <button class="btn-icone"><i class="fas fa-edit"></i></button>
+                <button class="btn-icone btn-excluir"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+
+        <div class="evento-item">
+            <div class="evento-data" style="background: #2ecc71;">
+                <span class="evento-dia">20</span>
+                <span class="evento-mes">Dez</span>
+            </div>
+            <div class="evento-info">
+                <h4>Entrega de Trabalhos</h4>
+                <p class="evento-turma">Turma: PROG301</p>
+                <p class="evento-horario"><i class="far fa-clock"></i> 23:59</p>
+            </div>
+            <div class="evento-acoes">
+                <button class="btn-icone"><i class="fas fa-edit"></i></button>
+                <button class="btn-icone btn-excluir"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos específicos para o calendário */
+    .calendario-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+
+    .calendario-header {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        grid-column: 1 / -1;
+        margin-bottom: 20px;
+    }
+
+    .calendario-controles {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .calendario-controles button {
+        background: var(--cor-destaque);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    #mesAtual {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--cinza-texto);
+    }
+
+    .btn-destaque {
+        background: var(--cor-destaque);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .calendario-grid {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        grid-column: 1;
+    }
+
+    .dias-semana {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-weight: bold;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        color: var(--cor-destaque);
+    }
+
+    .dias-calendario {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-top: 15px;
+    }
+
+    .dia-calendario {
+        aspect-ratio: 1;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dia-calendario:hover {
+        background: #f8f9fa;
+    }
+
+    .dia-calendario.dia-outro-mes {
+        color: var(--cinza-claro);
+    }
+
+    .dia-calendario.dia-atual {
+        background: var(--cor-destaque);
+        color: white;
+        font-weight: bold;
+    }
+
+    .eventos-lista {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        grid-column: 2;
+    }
+
+    .eventos-lista h3 {
+        color: var(--cinza-texto);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .evento-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+
+    .evento-data {
+        background: var(--cor-menu-bg);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .evento-dia {
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .evento-mes {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    .evento-info h4 {
+        margin-bottom: 5px;
+        color: var(--cinza-texto);
+    }
+
+    .evento-turma, .evento-horario {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 3px;
+    }
+
+    .evento-horario i {
+        margin-right: 5px;
+    }
+
+    .btn-icone {
+        background: none;
+        border: none;
+        color: var(--cinza-texto);
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    .btn-icone:hover {
+        background: #eee;
+    }
+
+    .btn-excluir {
+        color: #e74c3c;
+    }
+
+    @media (max-width: 1024px) {
+        .calendario-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .calendario-grid,
+        .eventos-lista {
+            grid-column: 1;
+        }
+    }
+</style>
+
+<script>
+    // JavaScript para o calendário
+    let dataAtual = new Date();
+    let anoAtual = dataAtual.getFullYear();
+    let mesAtual = dataAtual.getMonth();
+
+    const meses = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    function renderizarCalendario() {
+        const primeiroDia = new Date(anoAtual, mesAtual, 1);
+        const ultimoDia = new Date(anoAtual, mesAtual + 1, 0);
+        const diasNoMes = ultimoDia.getDate();
+        const primeiroDiaSemana = primeiroDia.getDay();
+        
+        // Atualizar título do mês
+        document.getElementById('mesAtual').textContent = `${meses[mesAtual]} ${anoAtual}`;
+        
+        // Limpar calendário
+        const container = document.getElementById('diasCalendario');
+        container.innerHTML = '';
+        
+        // Preencher dias vazios do mês anterior
+        for (let i = 0; i < primeiroDiaSemana; i++) {
+            const dia = document.createElement('div');
+            dia.className = 'dia-calendario dia-outro-mes';
+            dia.textContent = '';
+            container.appendChild(dia);
+        }
+        
+        // Preencher dias do mês atual
+        const hoje = new Date();
+        const eHoje = hoje.getDate() === dataAtual.getDate() &&
+                     hoje.getMonth() === mesAtual &&
+                     hoje.getFullYear() === anoAtual;
+        
+        for (let dia = 1; dia <= diasNoMes; dia++) {
+            const diaElement = document.createElement('div');
+            diaElement.className = 'dia-calendario';
+            diaElement.textContent = dia;
+            
+            // Marcar dia atual
+            if (eHoje && dia === hoje.getDate()) {
+                diaElement.classList.add('dia-atual');
+            }
+            
+            // Adicionar eventos simulados
+            if ([15, 18, 20].includes(dia)) {
+                const eventoPonto = document.createElement('div');
+                eventoPonto.style.width = '8px';
+                eventoPonto.style.height = '8px';
+                eventoPonto.style.background = dia === 15 ? '#e74c3c' : 
+                                              dia === 18 ? '#e67e22' : '#2ecc71';
+                eventoPonto.style.borderRadius = '50%';
+                eventoPonto.style.margin = '5px auto 0';
+                diaElement.appendChild(eventoPonto);
+            }
+            
+            container.appendChild(diaElement);
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('btnMesAnterior').addEventListener('click', () => {
+        mesAtual--;
+        if (mesAtual < 0) {
+            mesAtual = 11;
+            anoAtual--;
+        }
+        renderizarCalendario();
+    });
+
+    document.getElementById('btnProxMes').addEventListener('click', () => {
+        mesAtual++;
+        if (mesAtual > 11) {
+            mesAtual = 0;
+            anoAtual++;
+        }
+        renderizarCalendario();
+    });
+
+    document.getElementById('btnNovoEvento').addEventListener('click', () => {
+        alert('Funcionalidade de novo evento será implementada aqui!');
+        // Aqui você pode abrir um modal para criar novo evento
+    });
+
+    // Inicializar
+    renderizarCalendario();
+</script>
+{% endblock %}

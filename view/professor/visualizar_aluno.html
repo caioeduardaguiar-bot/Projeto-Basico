@@ -1,0 +1,406 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Perfil do Aluno - {{ aluno.nome_completo }}{% endblock %}
+{% block page_title %}Perfil do Aluno{% endblock %}
+{% block page_subtitle %}Visualize os detalhes completos do aluno{% endblock %}
+
+{% block styles %}
+<style>
+    .profile-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        max-width: 1000px;
+        margin: 20px auto;
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background-color: #3498db;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 25px;
+        color: white;
+        font-size: 2.5rem;
+    }
+    
+    .profile-info h2 {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+    }
+    
+    .profile-info .subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        font-style: italic;
+    }
+    
+    .profile-id {
+        background-color: #f8f9fa;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        color: #555;
+        display: inline-block;
+        border: 1px solid #eee;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .info-section {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+    
+    .info-section h3 {
+        color: #2c3e50;
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eaeaea;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-section h3 i {
+        color: #3498db;
+    }
+    
+    .info-item {
+        margin-bottom: 15px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #555;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-value {
+        color: #333;
+        font-size: 1rem;
+        padding-left: 20px;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-ativo {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .status-inativo {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    
+    .btn-back:hover {
+        background-color: #545b62;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-print {
+        background-color: #17a2b8;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    
+    .btn-print:hover {
+        background-color: #138496;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .empty-field {
+        color: #999;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+    
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 0;
+    }
+    
+    .contact-item i {
+        color: #3498db;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .notes-section {
+        grid-column: 1 / -1;
+    }
+    
+    .notes-content {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #eee;
+        min-height: 100px;
+        white-space: pre-line;
+        line-height: 1.6;
+    }
+    
+    .system-info {
+        display: flex;
+        gap: 30px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px dashed #eee;
+        font-size: 0.9rem;
+        color: #777;
+    }
+    
+    .system-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .system-info-item i {
+        color: #95a5a6;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn-back, .btn-print {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .system-info {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+    
+    @media print {
+        .action-buttons {
+            display: none;
+        }
+        
+        .profile-container {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+        
+        .info-section {
+            break-inside: avoid;
+        }
+        
+        .btn-back, .btn-print {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Cabeçalho do Perfil -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="profile-info">
+            <h2>{{ aluno.nome_completo }}</h2>
+            {% if aluno.apelido %}
+            <div class="subtitle">"{{ aluno.apelido }}"</div>
+            {% endif %}
+            <div class="profile-id">ID: #{{ aluno.id }}</div>
+        </div>
+    </div>
+    
+    <!-- Grade de Informações -->
+    <div class="info-grid">
+        <!-- Seção: Informações Pessoais -->
+        <div class="info-section">
+            <h3><i class="fas fa-id-card"></i> Informações Pessoais</h3>
+            
+            <div class="info-item">
+                <div class="info-label">
+                    <i class="fas fa-user"></i> Nome Completo
+                </div>
+                <div class="info-value">{{ aluno.nome_completo }}</div>
+            </div>
+            
+            {% if aluno.apelido %}
+            <div class="info-item">
+                <div class="info-label">
+                    <i class="fas fa-user-tag"></i> Apelido
+                </div>
+                <div class="info-value">{{ aluno.apelido }}</div>
+            </div>
+            {% endif %}
+            
+            {% if aluno.cpf %}
+            <div class="info-item">
+                <div class="info-label">
+                    <i class="fas fa-id-badge"></i> CPF
+                </div>
+                <div class="info-value">{{ aluno.cpf }}</div>
+            </div>
+            {% endif %}
+            
+        
+        <!-- Seção: Contato -->
+        <div class="info-section">
+            <h3><i class="fas fa-address-book"></i> Contato</h3>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ aluno.email }}</span>
+                </div>
+                
+                {% if aluno.telefone %}
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ aluno.telefone }}</span>
+                </div>
+                {% endif %}
+            </div>
+        
+    <!-- Botões de Ação -->
+    <div class="action-buttons">
+        <a href="{{ url_for('lista_alunos') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar para Lista de Alunos
+        </a>
+        
+        <button onclick="window.print()" class="btn-print">
+            <i class="fas fa-print"></i> Imprimir Perfil
+        </button>
+    </div>
+</div>
+
+<script>
+    // Adicionando funcionalidade de impressão
+    document.querySelector('.btn-print').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Alterar título da página temporariamente para impressão
+        const originalTitle = document.title;
+        const alunoNome = "{{ aluno.nome_completo }}";
+        const dataAtual = new Date().toLocaleDateString('pt-BR');
+        document.title = `Perfil do Aluno - ${alunoNome} - ${dataAtual}`;
+        
+        // Imprimir
+        window.print();
+        
+        // Restaurar título original
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 100);
+    });
+    
+    // Adicionar feedback visual aos botões
+    document.querySelectorAll('.btn-back, .btn-print').forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    });
+</script>
+{% endblock %}

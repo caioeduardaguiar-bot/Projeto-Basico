@@ -1,0 +1,60 @@
+{% extends "aluno/base_aluno.html" %}
+
+{% block title %}Configurações{% endblock %}
+{% block page_title %}Configurações{% endblock %}
+
+{% block styles %}
+<style>
+    .config-list { display: flex; flex-direction: column; gap: 20px; }
+    .config-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--branco); border-radius: 10px; box-shadow: 0 4px 6px var(--sombra); }
+    .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--azul-secundario); }
+    input:checked + .slider:before { transform: translateX(26px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="config-list">
+    <div class="config-item">
+        <div><h4>Modo Escuro</h4><p>Ativar tema escuro no sistema</p></div>
+        <label class="switch">
+            <input type="checkbox" id="temaToggle" {% if configuracoes.tema_sistema == 'escuro' %}checked{% endif %}>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="config-item">
+        <div><h4>Notificações por Email</h4><p>Receber alertas importantes</p></div>
+        <label class="switch">
+            <input type="checkbox" id="emailToggle" {% if configuracoes.notificacoes_email %}checked{% endif %}>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div style="text-align: right; margin-top: 20px;">
+        <button onclick="salvarConfig()" class="btn-sair" style="background: var(--verde);">Salvar Alterações</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function salvarConfig() {
+        const dados = {
+            tema_sistema: document.getElementById('temaToggle').checked ? 'escuro' : 'claro',
+            notificacoes_email: document.getElementById('emailToggle').checked
+        };
+        fetch("{{ url_for('salvar_configuracoes_ajax') }}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dados)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.sucesso) location.reload();
+            else alert('Erro ao salvar');
+        });
+    }
+</script>
+{% endblock %}

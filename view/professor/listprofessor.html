@@ -1,0 +1,324 @@
+{% extends "base_professor.html" %}
+
+{% block title %}Lista de Professores - Portal do Professor{% endblock %}
+
+{% block page_title %}Lista de Professores{% endblock %}
+
+{% block page_subtitle %}Gerencie os professores cadastrados no sistema{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para a página de listagem de professores */
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: var(--branco);
+        border-radius: 12px;
+        box-shadow: var(--sombra);
+    }
+
+    .content-actions {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn-primary {
+        background: var(--azul-secundario);
+        color: var(--branco);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: #10b981;
+        color: var(--branco);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-success:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: var(--branco);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+    }
+
+    .btn-warning {
+        background: #f59e0b;
+        color: var(--branco);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .btn-warning:hover {
+        background: #d97706;
+        transform: translateY(-2px);
+    }
+
+    .table-container {
+        background: var(--branco);
+        border-radius: 12px;
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: var(--azul-principal);
+        color: var(--branco);
+    }
+
+    th {
+        padding: 18px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid var(--cinza-claro);
+        transition: var(--transicao);
+    }
+
+    tbody tr:hover {
+        background: var(--azul-bg);
+    }
+
+    td {
+        padding: 16px 20px;
+        color: var(--cinza-escuro);
+    }
+
+    .acoes-cell {
+        display: flex;
+        gap: 10px;
+    }
+
+    .especializacoes {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--cinza-medio);
+    }
+
+    .no-data i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--cinza-claro);
+    }
+
+    .search-box {
+        background: var(--branco);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: var(--sombra);
+        margin-bottom: 20px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .search-input {
+        flex-grow: 1;
+        padding: 12px 16px;
+        border: 1px solid var(--cinza-borda);
+        border-radius: 8px;
+        font-size: 16px;
+        transition: var(--transicao);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--azul-secundario);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .content-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .content-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .acoes-cell {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+
+<div class="content-container">
+    <div class="content-header">
+        <h2 style="color: var(--azul-principal); font-size: 1.5rem;">Total de Professores: {{ dados|length }}</h2>
+        <div class="content-actions">
+            <a href="#" class="btn-primary">
+                <i class="fas fa-plus"></i> Novo Professor
+            </a>
+            <a href="#" class="btn-success">
+                <i class="fas fa-file-export"></i> Exportar Lista
+            </a>
+        </div>
+    </div>
+
+    <div class="search-box">
+        <i class="fas fa-search" style="color: var(--cinza-medio);"></i>
+        <input type="text" class="search-input" placeholder="Buscar professor por nome, email ou especialização...">
+        <button class="btn-primary" style="padding: 12px 24px;">
+            <i class="fas fa-search"></i> Buscar
+        </button>
+    </div>
+
+    <div class="table-container">
+        {% if dados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código Diploma</th>
+                        <th>Email</th>
+                        <th>Especializações</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for professor in dados %}
+                    <tr>
+                        <td>{{ professor.id }}</td>
+                        <td>{{ professor.codigo_diploma }}</td>
+                        <td>{{ professor.email }}</td>
+                        <td class="especializacoes" title="{{ professor.especializacoes }}">
+                            {{ professor.especializacoes }}
+                        </td>
+                        <td class="acoes-cell">
+                            <a href="{{ url_for('editar_professor', id=professor.id) }}" class="btn-warning">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{{ url_for('excluir_professor', id=professor.id) }}" 
+                               class="btn-danger" 
+                               onclick="return confirm('Tem certeza que deseja excluir este professor?');">
+                                <i class="fas fa-trash"></i> Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-data">
+                <i class="fas fa-user-tie"></i>
+                <h3>Nenhum professor cadastrado</h3>
+                <p>Adicione professores para começar a gerenciá-los.</p>
+                <a href="#" class="btn-primary" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Adicionar Primeiro Professor
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Busca em tempo real
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input');
+        const tableRows = document.querySelectorAll('tbody tr');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm) || searchTerm === '') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
+        // Animações para as linhas da tabela
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

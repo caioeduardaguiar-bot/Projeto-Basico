@@ -1,0 +1,613 @@
+{% extends "professor/base_professor.html" %}
+
+{% block title %}Detalhes do Curso - Portal do Professor{% endblock %}
+
+{% block page_title %}Detalhes do Curso{% endblock %}
+
+{% block page_subtitle %}Gerencie os detalhes do curso Python{% endblock %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para a página de detalhes */
+    .detalhes-header {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .curso-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .curso-titulo h2 {
+        color: #2c3e50;
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    
+    .curso-professor {
+        color: #7f8c8d;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .curso-professor i {
+        color: #e67e22;
+    }
+    
+    .curso-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    .stat-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        border-left: 4px solid #e67e22;
+    }
+    
+    .stat-numero {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2c3e50;
+        display: block;
+    }
+    
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+    
+    /* Progresso */
+    .progresso-container {
+        margin-top: 10px;
+    }
+    
+    .progresso-bar {
+        height: 10px;
+        background: #ecf0f1;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .progresso-fill {
+        height: 100%;
+        background: #2ecc71;
+        width: 85%;
+    }
+    
+    .progresso-texto {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: #7f8c8d;
+    }
+    
+    /* Seções de conteúdo */
+    .secao {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .secao-header {
+        background: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .secao-header h3 {
+        color: #2c3e50;
+        font-size: 20px;
+    }
+    
+    .secao-header i {
+        color: #e67e22;
+        margin-right: 10px;
+    }
+    
+    .secao-body {
+        padding: 20px;
+    }
+    
+    /* Tabela de alunos */
+    .tabela-alunos {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .tabela-alunos th {
+        background: #f8f9fa;
+        padding: 15px;
+        text-align: left;
+        color: #2c3e50;
+        font-weight: 600;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .tabela-alunos td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .aluno-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .aluno-avatar {
+        width: 40px;
+        height: 40px;
+        background: #3498db;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .aluno-nome {
+        font-weight: 500;
+    }
+    
+    .aluno-email {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+    
+    .aluno-status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-ativo {
+        background: #d5f4e6;
+        color: #27ae60;
+    }
+    
+    .status-inativo {
+        background: #fdeaea;
+        color: #e74c3c;
+    }
+    
+    /* Atividades */
+    .lista-atividades {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .atividade-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #e67e22;
+    }
+    
+    .atividade-info h4 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .atividade-info p {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+    
+    .atividade-status {
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .status-concluida {
+        background: #d5f4e6;
+        color: #27ae60;
+    }
+    
+    .status-pendente {
+        background: #fff4e6;
+        color: #e67e22;
+    }
+    
+    /* Botões de ação */
+    .acoes-botoes {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+    }
+    
+    .btn-primary {
+        background: #e67e22;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #d35400;
+    }
+    
+    .btn-secondary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #2980b9;
+    }
+    
+    .btn-outline {
+        background: white;
+        color: #2c3e50;
+        border: 1px solid #bdc3c7;
+    }
+    
+    .btn-outline:hover {
+        background: #f8f9fa;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 1024px) {
+        .curso-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .curso-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .tabela-alunos {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .acoes-botoes {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="detalhes-header">
+    <div class="curso-info">
+        <div class="curso-titulo">
+            <h2>PROGRAMAÇÃO EM PYTHON</h2>
+            <div class="curso-professor">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Professor: tarzan</span>
+            </div>
+        </div>
+        <div class="curso-acoes">
+            <a href="{{url_for('seus_cursos')}}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Voltar para Cursos
+            </a>
+        </div>
+    </div>
+    
+    <div class="curso-stats">
+        <div class="stat-card">
+            <span class="stat-numero">24</span>
+            <span class="stat-label">Alunos Matriculados</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-numero">8</span>
+            <span class="stat-label">Atividades</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-numero">85%</span>
+            <span class="stat-label">Progresso Médio</span>
+            <div class="progresso-container">
+                <div class="progresso-bar">
+                    <div class="progresso-fill"></div>
+                </div>
+                <div class="progresso-texto">
+                    <span>0%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-numero">92%</span>
+            <span class="stat-label">Taxa de Conclusão</span>
+        </div>
+    </div>
+</div>
+
+<div class="secao">
+    <div class="secao-header">
+        <h3><i class="fas fa-users"></i> Alunos do Curso</h3>
+        <span>24 alunos matriculados</span>
+    </div>
+    <div class="secao-body">
+        <table class="tabela-alunos">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Progresso</th>
+                    <th>Último Acesso</th>
+                    <th>Atividades Concluídas</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">AM</div>
+                            <div>
+                                <div class="aluno-nome">Ana Maria Silva</div>
+                                <div class="aluno-email">ana.maria@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progresso-bar" style="margin: 5px 0;">
+                            <div class="progresso-fill" style="width: 92%"></div>
+                        </div>
+                        <span>92%</span>
+                    </td>
+                    <td>Hoje, 14:30</td>
+                    <td>8/8</td>
+                    <td><span class="aluno-status status-ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">CR</div>
+                            <div>
+                                <div class="aluno-nome">Carlos Roberto Santos</div>
+                                <div class="aluno-email">carlos.roberto@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progresso-bar" style="margin: 5px 0;">
+                            <div class="progresso-fill" style="width: 75%"></div>
+                        </div>
+                        <span>75%</span>
+                    </td>
+                    <td>Ontem, 20:15</td>
+                    <td>6/8</td>
+                    <td><span class="aluno-status status-ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">MF</div>
+                            <div>
+                                <div class="aluno-nome">Mariana Ferreira</div>
+                                <div class="aluno-email">mariana.ferreira@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progresso-bar" style="margin: 5px 0;">
+                            <div class="progresso-fill" style="width: 100%"></div>
+                        </div>
+                        <span>100%</span>
+                    </td>
+                    <td>Hoje, 10:45</td>
+                    <td>8/8</td>
+                    <td><span class="aluno-status status-ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">JO</div>
+                            <div>
+                                <div class="aluno-nome">João Oliveira</div>
+                                <div class="aluno-email">joao.oliveira@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progresso-bar" style="margin: 5px 0;">
+                            <div class="progresso-fill" style="width: 60%"></div>
+                        </div>
+                        <span>60%</span>
+                    </td>
+                    <td>3 dias atrás</td>
+                    <td>5/8</td>
+                    <td><span class="aluno-status status-ativo">Ativo</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">PC</div>
+                            <div>
+                                <div class="aluno-nome">Patrícia Costa</div>
+                                <div class="aluno-email">patricia.costa@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progresso-bar" style="margin: 5px 0;">
+                            <div class="progresso-fill" style="width: 45%"></div>
+                        </div>
+                        <span>45%</span>
+                    </td>
+                    <td>1 semana atrás</td>
+                    <td>4/8</td>
+                    <td><span class="aluno-status status-inativo">Inativo</span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="acoes-botoes">
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> Adicionar Aluno
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fas fa-file-export"></i> Exportar Lista
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-print"></i> Imprimir Relatório
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="secao">
+    <div class="secao-header">
+        <h3><i class="fas fa-tasks"></i> Atividades do Curso</h3>
+        <span>8 atividades totais</span>
+    </div>
+    <div class="secao-body">
+        <div class="lista-atividades">
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Introdução ao Python</h4>
+                    <p>Data de entrega: 15/03/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-concluida">Concluída</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Variáveis e Tipos de Dados</h4>
+                    <p>Data de entrega: 22/03/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-concluida">Concluída</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Estruturas de Controle</h4>
+                    <p>Data de entrega: 29/03/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-concluida">Concluída</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Funções e Módulos</h4>
+                    <p>Data de entrega: 05/04/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-concluida">Concluída</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Manipulação de Arquivos</h4>
+                    <p>Data de entrega: 12/04/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-pendente">Em andamento</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Programação Orientada a Objetos</h4>
+                    <p>Data de entrega: 19/04/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-pendente">Em andamento</span>
+            </div>
+            <div class="atividade-item">
+                <div class="atividade-info">
+                    <h4>Trabalho Final</h4>
+                    <p>Data de entrega: 30/04/2023 • 0/24 alunos concluíram</p>
+                </div>
+                <span class="atividade-status status-pendente">Pendente</span>
+            </div>
+        </div>
+        
+        <div class="acoes-botoes">
+            <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nova Atividade
+            </button>
+            <button class="btn btn-secondary">
+                <i class="fas fa-chart-bar"></i> Ver Estatísticas
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="secao">
+    <div class="secao-header">
+        <h3><i class="fas fa-chart-line"></i> Estatísticas do Curso</h3>
+    </div>
+    <div class="secao-body">
+        <div class="curso-stats" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="stat-card">
+                <span class="stat-numero">4.8</span>
+                <span class="stat-label">Avaliação Média</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-numero">18</span>
+                <span class="stat-label">Horas de Conteúdo</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-numero">100%</span>
+                <span class="stat-label">Satisfação dos Alunos</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Scripts específicos para a página de detalhes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adicionar funcionalidade aos botões
+        const botoes = document.querySelectorAll('.btn');
+        botoes.forEach(botao => {
+            botao.addEventListener('click', function() {
+                if (!this.href) {
+                    alert('Funcionalidade em desenvolvimento!');
+                }
+            });
+        });
+        
+        // Simular dados em tempo real
+        function atualizarDados() {
+            const alunosAtivos = document.querySelectorAll('.status-ativo').length;
+            const progressoMedio = document.querySelector('.stat-card:nth-child(3) .stat-numero');
+            
+            // Atualizar progresso médio baseado nos alunos ativos
+            const progresso = 75 + (alunosAtivos * 0.5);
+            progressoMedio.textContent = Math.min(progresso, 100).toFixed(0) + '%';
+            
+            // Atualizar barra de progresso
+            const progressoFill = document.querySelector('.progresso-fill');
+            progressoFill.style.width = Math.min(progresso, 100) + '%';
+        }
+        
+        // Atualizar dados a cada 30 segundos
+        setInterval(atualizarDados, 30000);
+    });
+</script>
+{% endblock %}

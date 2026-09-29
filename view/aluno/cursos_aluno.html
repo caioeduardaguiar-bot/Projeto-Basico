@@ -1,0 +1,84 @@
+{% extends "aluno/base_aluno.html" %}
+
+{% block title %}Meus Cursos - Portal do Aluno{% endblock %}
+{% block page_title %}Meus Cursos{% endblock %}
+{% block page_subtitle %}Gerencie e acompanhe seu progresso{% endblock %}
+
+{% block styles %}
+<style>
+    .cursos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .cursos-stats { display: flex; gap: 15px; }
+    .stat-card { background: var(--branco); padding: 12px 20px; border-radius: 10px; box-shadow: 0 4px 6px var(--sombra); text-align: center; }
+    .filtros-container { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+    .filtro-btn { background: var(--branco); border: 1px solid var(--cinza-claro); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+    .filtro-btn.active, .filtro-btn:hover { background: var(--azul-secundario); color: var(--branco); border-color: var(--azul-secundario); }
+    .cursos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+    .curso-card { background: var(--branco); border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px var(--sombra); transition: transform 0.3s; }
+    .curso-card:hover { transform: translateY(-5px); }
+    .curso-header { padding: 20px; color: var(--branco); background: var(--gradiente-azul); height: 120px; position: relative; }
+    .curso-categoria { background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; display: inline-block; margin-bottom: 5px; }
+    .curso-body { padding: 20px; }
+    .curso-info { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--cinza-medio); font-size: 0.9rem; }
+    .progress-bar { height: 8px; background: var(--cinza-claro); border-radius: 4px; overflow: hidden; margin: 10px 0; }
+    .progress-fill { height: 100%; background: var(--azul-secundario); }
+    .btn-curso { background: var(--azul-secundario); color: var(--branco); border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 10px; text-align: center; text-decoration: none; display: block; }
+    .btn-curso:hover { background: var(--azul-hover); }
+    /* Cores dinâmicas simuladas via classe */
+    .azul { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .verde { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cursos-header">
+    <h2>Todos os Cursos</h2>
+    <div class="cursos-stats">
+        <div class="stat-card"><h4>{{ cursos|length }}</h4><p>Ativos</p></div>
+    </div>
+</div>
+
+<div class="filtros-container">
+    <button class="filtro-btn active">Todos</button>
+    <button class="filtro-btn">Em Andamento</button>
+    <button class="filtro-btn">Concluídos</button>
+</div>
+
+    <h2 class="section-title">Meus Cursos</h2>
+<div class="cursos-grid">
+    <div class="curso-card">
+        <div class="curso-header"><h4>Cálculo I</h4><p>Prof. Carlos Silva</p></div>
+        <div class="curso-body"><p>75% Completo</p><button class="btn-curso" onclick="location.href='{{ url_for('curso_detalhes', curso_id=1) }}'">Acessar Curso</button></div>
+    </div>
+    <div class="curso-card">
+        <div class="curso-header" style="background: linear-gradient(135deg, #27ae60, #2ecc71);"><h4>Python</h4><p>Prof. Ana Costa</p></div>
+        <div class="curso-body"><p>90% Completo</p><button class="btn-curso" onclick="location.href='{{ url_for('curso_detalhes', curso_id=2)}}'">Acessar Curso</button></div>
+    </div>
+</div>
+
+<div class="cursos-grid">
+    {% for curso in cursos %}
+    <div class="curso-card">
+        <div class="curso-header {{ curso.cor }}">
+            <span class="curso-categoria">{{ curso.categoria }}</span>
+            <h4>{{ curso.nome }}</h4>
+            <p>Prof. {{ curso.professor }}</p>
+        </div>
+        <div class="curso-body">
+            <div class="curso-info"><span><i class="fas fa-clock"></i> 60h restantes</span><span>{{ curso.progresso }}%</span></div>
+            <div class="progress-bar">
+                <div class="progress-fill progress-{{ curso.cor if curso.cor else 'azul-secundario' }}" 
+                style="width: {{ curso.progresso }}%;">
+                </div>
+            </div>
+            <p>{{ curso.descricao }}</p>
+            <!-- Troque isso: -->
+
+<!-- Por isso: -->
+            <a href="{{ url_for('curso_detalhes', curso_id=curso.id) }}" class="btn-curso">Acessar Curso</a>
+        </div>
+    </div>
+    {% else %}
+    <p>.</p>
+    {% endfor %}
+</div>
+{% endblock %}

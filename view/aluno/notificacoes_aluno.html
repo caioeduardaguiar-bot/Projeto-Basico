@@ -1,0 +1,1427 @@
+[file name]: notificacoes_aluno.html
+[file content begin]
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações - Portal do Aluno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET E ESTILOS GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --azul-principal: #2c3e50;
+            --azul-secundario: #3498db;
+            --azul-claro: #ecf0f1;
+            --azul-hover: #2980b9;
+            --cinza-escuro: #34495e;
+            --cinza-medio: #7f8c8d;
+            --cinza-claro: #bdc3c7;
+            --branco: #ffffff;
+            --verde: #27ae60;
+            --laranja: #e67e22;
+            --vermelho: #e74c3c;
+            --roxo: #9b59b6;
+            --amarelo: #f1c40f;
+            --turquesa: #1abc9c;
+            --sombra: rgba(0, 0, 0, 0.1);
+            --gradiente-azul: linear-gradient(135deg, #3498db, #2c3e50);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== MENU LATERAL ===== */
+        .menu-aluno {
+            width: 280px;
+            background: var(--azul-principal);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            box-shadow: 5px 0 15px var(--sombra);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        /* Cabeçalho do menu */
+        .menu-header {
+            padding: 30px 20px;
+            background: var(--cinza-escuro);
+            border-bottom: 3px solid var(--azul-secundario);
+            text-align: center;
+        }
+
+        .aluno-avatar {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: var(--gradiente-azul);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--azul-secundario);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .aluno-avatar span {
+            color: var(--branco);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .menu-header h2 {
+            color: var(--branco);
+            font-size: 1.5rem;
+            margin: 10px 0 5px;
+            font-weight: 600;
+        }
+
+        .menu-header p {
+            color: var(--cinza-claro);
+            font-size: 0.9rem;
+            margin: 2px 0;
+        }
+
+        /* Lista de navegação */
+        .menu-nav {
+            padding: 25px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 25px;
+            color: var(--azul-claro);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 3px 0;
+        }
+
+        .menu-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--azul-secundario);
+            color: var(--branco);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid var(--azul-secundario);
+            color: var(--branco);
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Badge de notificações */
+        .notificacao-badge {
+            background: var(--vermelho);
+            color: var(--branco);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Separador */
+        .menu-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--cinza-medio), transparent);
+            margin: 20px 25px;
+        }
+
+        /* Menu footer */
+        .menu-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--cinza-medio);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--cinza-escuro);
+        }
+
+        .btn-sair {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: var(--branco);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-sair:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .conteudo-principal {
+            margin-left: 280px;
+            padding: 30px;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        /* Barra superior */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--cinza-claro);
+        }
+
+        .welcome-message h1 {
+            color: var(--azul-principal);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-message p {
+            color: var(--cinza-medio);
+            font-size: 1rem;
+        }
+
+        .data-hora {
+            background: var(--branco);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--sombra);
+            font-weight: 600;
+            color: var(--azul-principal);
+            border-left: 4px solid var(--azul-secundario);
+        }
+
+        /* ===== ESTILOS DAS NOTIFICAÇÕES ===== */
+        
+        /* Cabeçalho das notificações */
+        .notificacoes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .notificacoes-header h2 {
+            color: var(--azul-principal);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contador-notificacoes {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Ações das notificações */
+        .acoes-notificacoes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn-acao {
+            background: var(--branco);
+            border: 1px solid var(--cinza-claro);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--cinza-escuro);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-acao:hover {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            border-color: var(--azul-secundario);
+        }
+
+        .btn-acao.active {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            border-color: var(--azul-secundario);
+        }
+
+        /* Lista de notificações */
+        .lista-notificacoes {
+            background: var(--branco);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px var(--sombra);
+            margin-bottom: 40px;
+        }
+
+        .sem-notificacoes {
+            text-align: center;
+            padding: 60px 30px;
+            color: var(--cinza-medio);
+        }
+
+        .sem-notificacoes i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--cinza-claro);
+        }
+
+        .sem-notificacoes h3 {
+            color: var(--cinza-escuro);
+            margin-bottom: 10px;
+        }
+
+        /* Item de notificação */
+        .notificacao-item {
+            display: flex;
+            padding: 20px;
+            border-bottom: 1px solid var(--cinza-claro);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .notificacao-item:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .notificacao-item:last-child {
+            border-bottom: none;
+        }
+
+        .notificacao-item.nao-lida {
+            background: rgba(52, 152, 219, 0.08);
+            border-left: 4px solid var(--azul-secundario);
+        }
+
+        .notificacao-item.urgente {
+            background: rgba(231, 76, 60, 0.08);
+            border-left: 4px solid var(--vermelho);
+        }
+
+        .notificacao-item.importante {
+            background: rgba(243, 156, 18, 0.08);
+            border-left: 4px solid var(--laranja);
+        }
+
+        .notificacao-item.informativa {
+            background: rgba(46, 204, 113, 0.08);
+            border-left: 4px solid var(--verde);
+        }
+
+        .notificacao-item.notificacao {
+            background: rgba(241, 196, 15, 0.08);
+            border-left: 4px solid var(--amarelo);
+        }
+
+        /* Ícone da notificação */
+        .notificacao-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            color: var(--branco);
+        }
+
+        .notificacao-item.nao-lida .notificacao-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .notificacao-item.urgente .notificacao-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .notificacao-item.importante .notificacao-icon {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+        }
+
+        .notificacao-item.informativa .notificacao-icon {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .notificacao-item.notificacao .notificacao-icon {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+        }
+
+        .notificacao-item.lida .notificacao-icon {
+            background: var(--cinza-claro);
+        }
+
+        /* Conteúdo da notificação */
+        .notificacao-conteudo {
+            flex: 1;
+        }
+
+        .notificacao-titulo {
+            color: var(--azul-principal);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notificacao-item.nao-lida .notificacao-titulo {
+            font-weight: 600;
+        }
+
+        .badge-tipo {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-urgente { background: rgba(231, 76, 60, 0.2); color: var(--vermelho); }
+        .badge-importante { background: rgba(243, 156, 18, 0.2); color: var(--laranja); }
+        .badge-informativa { background: rgba(46, 204, 113, 0.2); color: var(--verde); }
+        .badge-notificacao { background: rgba(241, 196, 15, 0.2); color: var(--amarelo); }
+        .badge-sistema { background: rgba(155, 89, 182, 0.2); color: var(--roxo); }
+
+        .notificacao-descricao {
+            color: var(--cinza-medio);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .notificacao-metadata {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--cinza-medio);
+        }
+
+        .notificacao-curso {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 3px 10px;
+            border-radius: 12px;
+            color: var(--azul-secundario);
+            font-weight: 500;
+        }
+
+        .notificacao-data {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Ações da notificação */
+        .notificacao-acoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 15px;
+        }
+
+        .btn-notificacao {
+            background: none;
+            border: 1px solid var(--cinza-claro);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--cinza-medio);
+        }
+
+        .btn-notificacao:hover {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            border-color: var(--azul-secundario);
+        }
+
+        .btn-notificacao.urgente:hover {
+            background: var(--vermelho);
+            border-color: var(--vermelho);
+        }
+
+        .btn-notificacao.notificacao:hover {
+            background: var(--amarelo);
+            border-color: var(--amarelo);
+        }
+
+        /* Indicador de não lida */
+        .indicador-nao-lida {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--azul-secundario);
+            position: absolute;
+            top: 25px;
+            left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .notificacao-item.urgente .indicador-nao-lida {
+            background: var(--vermelho);
+        }
+
+        .notificacao-item.notificacao .indicador-nao-lida {
+            background: var(--amarelo);
+        }
+
+        /* Configurações de notificações */
+        .configuracoes-container {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 15px var(--sombra);
+        }
+
+        .configuracoes-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--azul-claro);
+        }
+
+        .configuracoes-header h3 {
+            color: var(--azul-principal);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .configuracoes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .configuracao-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--azul-claro);
+            border-radius: 10px;
+        }
+
+        .configuracao-info h4 {
+            color: var(--azul-principal);
+            margin-bottom: 5px;
+        }
+
+        .configuracao-info p {
+            color: var(--cinza-medio);
+            font-size: 0.9rem;
+        }
+
+        /* Switch toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--cinza-claro);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--azul-secundario);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 1024px) {
+            .menu-aluno {
+                width: 250px;
+            }
+            
+            .conteudo-principal {
+                margin-left: 250px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-aluno {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: 0 4px 12px var(--sombra);
+            }
+            
+            .conteudo-principal {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .menu-item {
+                flex: 1;
+                min-width: 150px;
+                margin: 5px;
+                border-radius: 10px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                justify-content: center;
+                text-align: center;
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            
+            .menu-item:hover {
+                border-left: none;
+                border-bottom: 3px solid var(--azul-secundario);
+                transform: translateY(-5px);
+            }
+            
+            .menu-item.active {
+                border-left: none;
+                border-bottom: 3px solid var(--azul-secundario);
+            }
+            
+            .menu-item i {
+                margin-right: 0;
+                margin-bottom: 8px;
+                font-size: 1.5rem;
+            }
+            
+            .menu-footer {
+                position: relative;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .data-hora {
+                align-self: flex-start;
+            }
+            
+            .notificacoes-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .notificacao-item {
+                flex-direction: column;
+            }
+            
+            .notificacao-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .notificacao-acoes {
+                flex-direction: row;
+                margin-left: 0;
+                margin-top: 15px;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-nav {
+                flex-direction: column;
+            }
+            
+            .menu-item {
+                min-width: 100%;
+            }
+            
+            .acoes-notificacoes {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .btn-acao {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .notificacao-metadata {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+
+        /* ===== ANIMAÇÕES ===== */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .menu-item {
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+        }
+
+        .menu-item:nth-child(1) { animation-delay: 0.1s; }
+        .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .menu-item:nth-child(3) { animation-delay: 0.3s; }
+        .menu-item:nth-child(4) { animation-delay: 0.4s; }
+        .menu-item:nth-child(5) { animation-delay: 0.5s; }
+
+        /* ===== MENSAGENS FLASH ===== */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            max-width: 400px;
+        }
+
+        .flash-message {
+            background: var(--branco);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--azul-secundario);
+            animation: slideInRight 0.3s ease forwards;
+        }
+
+        .flash-message.sucesso {
+            border-left-color: var(--verde);
+        }
+
+        .flash-message.erro {
+            border-left-color: var(--vermelho);
+        }
+
+        .flash-message.info {
+            border-left-color: var(--azul-secundario);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Lateral -->
+    <nav class="menu-aluno">
+        <!-- Cabeçalho do Menu -->
+        <div class="menu-header">
+            <div class="aluno-avatar">
+                <span>{{ session.usuario[:2]|upper if session.usuario else 'AL' }}</span>
+            </div>
+            <h2>Bem-vindo, {{ session.usuario or 'Aluno' }}!</h2>
+            <p>ID: {{ session.id_aluno or 'N/A' }}</p>
+        </div>
+
+        <!-- Navegação -->
+        <div class="menu-nav">
+            <a href="{{ url_for('home_aluno') }}" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </a>
+            
+            <a href="{{ url_for('cursos_aluno') }}" class="menu-item">
+                <i class="fas fa-book"></i>
+                <span>Meus Cursos</span>
+            </a>
+            
+            <a href="{{ url_for('calendario_aluno') }}" class="menu-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendário</span>
+            </a>
+            
+            <div class="menu-divider"></div>
+            
+            <a href="{{ url_for('desempenho_aluno') }}" class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Desempenho</span>
+            </a>
+            
+            <a href="{{ url_for('notificacoes_aluno') }}" class="menu-item active">
+                <i class="fas fa-bell"></i>
+                <span>Notificações</span>
+            </a>
+            
+            <a href="{{ url_for('perfil_aluno') }}" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Meu Perfil</span>
+            </a>
+            
+            <a href="{{ url_for('configuracoes_aluno') }}" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </a>
+        </div>
+
+        <!-- Rodapé do Menu -->
+        <div class="menu-footer">
+            <a href="{{ url_for('logout') }}" class="btn-sair">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+            </a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="conteudo-principal">
+        <!-- Barra Superior -->
+        <div class="top-bar">
+            <div class="welcome-message">
+                <h1>Notificações</h1>
+                <p>Fique por dentro das novidades e atualizações</p>
+            </div>
+            <div class="data-hora" id="dataHora">
+                <!-- JavaScript vai preencher aqui -->
+            </div>
+        </div>
+
+        <!-- Cabeçalho das Notificações -->
+        <div class="notificacoes-header">
+            <h2><i class="fas fa-bell"></i> Minhas Notificações</h2>
+            <div class="contador-notificacoes" id="contadorNotificacoes">
+                12 notificações
+            </div>
+        </div>
+
+        <!-- Ações das Notificações -->
+        <div class="acoes-notificacoes">
+            <button class="btn-acao active" data-filtro="todas">
+                <i class="fas fa-th"></i>
+                Todas
+            </button>
+            <button class="btn-acao" data-filtro="nao-lidas">
+                <i class="fas fa-envelope"></i>
+                Não Lidas
+                <span class="notificacao-badge" style="margin-left: 8px;" id="badgeNaoLidas">5</span>
+            </button>
+            <button class="btn-acao" data-filtro="urgentes">
+                <i class="fas fa-exclamation-circle"></i>
+                Urgentes
+            </button>
+            <button class="btn-acao" data-filtro="importantes">
+                <i class="fas fa-star"></i>
+                Importantes
+            </button>
+            <button class="btn-acao" data-filtro="notificacoes">
+                <i class="fas fa-bell"></i>
+                Notificações
+            </button>
+            <button class="btn-acao" id="btnMarcarTodasLidas">
+                <i class="fas fa-check-double"></i>
+                Marcar Todas como Lidas
+            </button>
+            <button class="btn-acao" id="btnLimparNotificacoes">
+                <i class="fas fa-trash"></i>
+                Limpar Todas
+            </button>
+        </div>
+
+        <!-- Lista de Notificações -->
+        <div class="lista-notificacoes" id="listaNotificacoes">
+            <!-- As notificações serão carregadas aqui via JavaScript -->
+        </div>
+
+        <!-- Configurações de Notificações -->
+        <div class="configuracoes-container">
+            <div class="configuracoes-header">
+                <h3><i class="fas fa-cog"></i> Configurações de Notificações</h3>
+            </div>
+            
+            <div class="configuracoes-lista">
+                <div class="configuracao-item">
+                    <div class="configuracao-info">
+                        <h4>Notificações por Email</h4>
+                        <p>Receber notificações por email</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleEmail" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="configuracao-item">
+                    <div class="configuracao-info">
+                        <h4>Notificações Push</h4>
+                        <p>Receber notificações no navegador</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="togglePush" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="configuracao-item">
+                    <div class="configuracao-info">
+                        <h4>Notificações de Prazos</h4>
+                        <p>Alertas sobre prazos próximos</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="togglePrazos" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="configuracao-item">
+                    <div class="configuracao-info">
+                        <h4>Notificações de Aulas</h4>
+                        <p>Alertas sobre cancelamentos e mudanças</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleAulas" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="configuracao-item">
+                    <div class="configuracao-info">
+                        <h4>Notificações de Notas</h4>
+                        <p>Alertas quando novas notas são publicadas</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleNotas" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Flash Messages -->
+    <div class="flash-messages" id="flashMessages">
+        <!-- Mensagens flash aparecerão aqui -->
+    </div>
+
+    <script>
+        // Dados de exemplo para notificações
+        const notificacoesExemplo = [
+            {
+                id: 1,
+                titulo: 'Nova nota publicada',
+                descricao: 'Sua nota em Cálculo I foi publicada. Acesse o portal para visualizar.',
+                tipo: 'informativa',
+                lida: false,
+                curso: 'MAT001',
+                data_hora: '15/12/2024 10:30',
+                prazo: null
+            },
+            {
+                id: 2,
+                titulo: 'Aula cancelada amanhã',
+                descricao: 'Aula de História das 16h foi cancelada devido a problemas de infraestrutura.',
+                tipo: 'urgente',
+                lida: false,
+                curso: 'HIST202',
+                data_hora: '14/12/2024 18:15',
+                prazo: '15/12/2024 16:00'
+            },
+            {
+                id: 3,
+                titulo: 'Prazo de entrega próximo',
+                descricao: 'Entrega do trabalho de Python em 2 dias. Não perca o prazo!',
+                tipo: 'importante',
+                lida: true,
+                curso: 'PROG101',
+                data_hora: '13/12/2024 14:20',
+                prazo: '17/12/2024 23:59'
+            },
+            {
+                id: 4,
+                titulo: 'Atualização do sistema',
+                descricao: 'Novas funcionalidades disponíveis no portal do aluno.',
+                tipo: 'informativa',
+                lida: true,
+                curso: null,
+                data_hora: '12/12/2024 09:00',
+                prazo: null
+            },
+            {
+                id: 5,
+                titulo: 'Reunião de orientação',
+                descricao: 'Reunião marcada para discutir o projeto final.',
+                tipo: 'notificacao',
+                lida: false,
+                curso: 'PESQ301',
+                data_hora: '11/12/2024 15:45',
+                prazo: '18/12/2024 14:00'
+            },
+            {
+                id: 6,
+                titulo: 'Material disponível',
+                descricao: 'Novo material de estudo disponível na plataforma.',
+                tipo: 'notificacao',
+                lida: true,
+                curso: 'MAT001',
+                data_hora: '10/12/2024 11:20',
+                prazo: null
+            },
+            {
+                id: 7,
+                titulo: 'Prova remarcada',
+                descricao: 'A prova de Física foi remarcada para próxima semana.',
+                tipo: 'urgente',
+                lida: false,
+                curso: 'FIS101',
+                data_hora: '09/12/2024 16:30',
+                prazo: '20/12/2024 10:00'
+            },
+            {
+                id: 8,
+                titulo: 'Resultado de trabalho',
+                descricao: 'Resultado do trabalho em grupo já está disponível.',
+                tipo: 'informativa',
+                lida: true,
+                curso: 'PROG101',
+                data_hora: '08/12/2024 13:15',
+                prazo: null
+            }
+        ];
+
+        // Elementos DOM
+        const listaNotificacoesEl = document.getElementById('listaNotificacoes');
+        const badgeNotificacoesEl = document.getElementById('badgeNotificacoes');
+        const badgeNaoLidasEl = document.getElementById('badgeNaoLidas');
+        const contadorNotificacoesEl = document.getElementById('contadorNotificacoes');
+        const flashMessagesEl = document.getElementById('flashMessages');
+
+        // Atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+            const opcoes = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            
+            const dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
+            document.getElementById('dataHora').textContent = dataFormatada;
+        }
+
+        // Carregar notificações
+        function carregarNotificacoes(filtro = 'todas') {
+            listaNotificacoesEl.innerHTML = '';
+            
+            let notificacoesFiltradas = [...notificacoesExemplo];
+            
+            // Aplicar filtro
+            if (filtro === 'nao-lidas') {
+                notificacoesFiltradas = notificacoesFiltradas.filter(n => !n.lida);
+            } else if (filtro === 'urgentes') {
+                notificacoesFiltradas = notificacoesFiltradas.filter(n => n.tipo === 'urgente');
+            } else if (filtro === 'importantes') {
+                notificacoesFiltradas = notificacoesFiltradas.filter(n => n.tipo === 'importante');
+            } else if (filtro === 'notificacoes') {
+                notificacoesFiltradas = notificacoesFiltradas.filter(n => n.tipo === 'notificacao');
+            }
+            
+            if (notificacoesFiltradas.length === 0) {
+                listaNotificacoesEl.innerHTML = `
+                    <div class="sem-notificacoes">
+                        <i class="far fa-bell-slash"></i>
+                        <h3>Nenhuma notificação</h3>
+                        <p>Você está em dia com todas as suas notificações!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificacoesFiltradas.forEach(notificacao => {
+                const notificacaoItemEl = document.createElement('div');
+                notificacaoItemEl.className = `notificacao-item ${notificacao.tipo} ${notificacao.lida ? 'lida' : 'nao-lida'}`;
+                notificacaoItemEl.dataset.id = notificacao.id;
+                
+                // Ícone baseado no tipo
+                let iconClass = 'fas fa-bell';
+                if (notificacao.tipo === 'urgente') iconClass = 'fas fa-exclamation-circle';
+                else if (notificacao.tipo === 'importante') iconClass = 'fas fa-star';
+                else if (notificacao.tipo === 'informativa') iconClass = 'fas fa-info-circle';
+                else if (notificacao.tipo === 'notificacao') iconClass = 'fas fa-bell';
+                
+                // Badge tipo
+                let badgeText = 'SISTEMA';
+                if (notificacao.tipo === 'urgente') badgeText = 'URGENTE';
+                else if (notificacao.tipo === 'importante') badgeText = 'IMPORTANTE';
+                else if (notificacao.tipo === 'informativa') badgeText = 'INFORMATIVA';
+                else if (notificacao.tipo === 'notificacao') badgeText = 'NOTIFICAÇÃO';
+                
+                notificacaoItemEl.innerHTML = `
+                    ${!notificacao.lida ? '<div class="indicador-nao-lida"></div>' : ''}
+                    
+                    <div class="notificacao-icon">
+                        <i class="${iconClass}"></i>
+                    </div>
+                    
+                    <div class="notificacao-conteudo">
+                        <div class="notificacao-titulo">
+                            ${notificacao.titulo}
+                            <span class="badge-tipo badge-${notificacao.tipo}">
+                                ${badgeText}
+                            </span>
+                        </div>
+                        
+                        <p class="notificacao-descricao">${notificacao.descricao}</p>
+                        
+                        <div class="notificacao-metadata">
+                            ${notificacao.curso ? `<span class="notificacao-curso">${notificacao.curso}</span>` : ''}
+                            
+                            <span class="notificacao-data">
+                                <i class="far fa-clock"></i>
+                                ${notificacao.data_hora}
+                            </span>
+                            
+                            ${notificacao.prazo ? `
+                            <span class="notificacao-data">
+                                <i class="fas fa-hourglass-end"></i>
+                                Prazo: ${notificacao.prazo}
+                            </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="notificacao-acoes">
+                        ${notificacao.lida ? `
+                        <button class="btn-notificacao" title="Marcar como não lida" data-acao="marcar-nao-lida">
+                            <i class="far fa-envelope"></i>
+                        </button>
+                        ` : `
+                        <button class="btn-notificacao" title="Marcar como lida" data-acao="marcar-lida">
+                            <i class="far fa-envelope-open"></i>
+                        </button>
+                        `}
+                        
+                        ${notificacao.tipo === 'urgente' ? `
+                        <button class="btn-notificacao urgente" title="Ação urgente" data-acao="acao-urgente">
+                            <i class="fas fa-bolt"></i>
+                        </button>
+                        ` : ''}
+                        
+                        ${notificacao.tipo === 'notificacao' ? `
+                        <button class="btn-notificacao notificacao" title="Ver no calendário" data-acao="ver-calendario">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                        ` : ''}
+                        
+                        <button class="btn-notificacao" title="Excluir notificação" data-acao="excluir">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                
+                listaNotificacoesEl.appendChild(notificacaoItemEl);
+            });
+            
+            atualizarContadores();
+        }
+
+        // Atualizar contadores
+        function atualizarContadores() {
+            const totalNotificacoes = notificacoesExemplo.length;
+            const naoLidas = notificacoesExemplo.filter(n => !n.lida).length;
+            
+            if (contadorNotificacoesEl) {
+                contadorNotificacoesEl.textContent = `${totalNotificacoes} notificações`;
+            }
+            
+            if (badgeNotificacoesEl) {
+                badgeNotificacoesEl.textContent = naoLidas;
+            }
+            
+            if (badgeNaoLidasEl) {
+                badgeNaoLidasEl.textContent = naoLidas;
+            }
+            
+            // Atualizar também o badge no menu de navegação
+            const badgeMenuCalendario = document.querySelector('.menu-item[href*="calendario"] .notificacao-badge');
+            if (badgeMenuCalendario) {
+                // Contar eventos de hoje (simulação)
+                const hoje = new Date();
+                const eventosHoje = 3; // Valor fixo para exemplo
+                badgeMenuCalendario.textContent = eventosHoje;
+            }
+        }
+
+        // Mostrar mensagem flash
+        function mostrarFlash(mensagem, tipo = 'info') {
+            const flashEl = document.createElement('div');
+            flashEl.className = `flash-message ${tipo}`;
+            flashEl.textContent = mensagem;
+            
+            flashMessagesEl.appendChild(flashEl);
+            
+            // Remover após 5 segundos
+            setTimeout(() => {
+                flashEl.style.animation = 'slideInRight 0.3s ease reverse forwards';
+                setTimeout(() => flashEl.remove(), 300);
+            }, 5000);
+        }
+
+        // Marcar notificação como lida/não lida
+        function marcarNotificacao(id, lida) {
+            const notificacao = notificacoesExemplo.find(n => n.id === id);
+            if (notificacao) {
+                notificacao.lida = lida;
+                
+                // Recarregar notificações com filtro atual
+                const filtroAtivo = document.querySelector('.acoes-notificacoes .btn-acao.active').dataset.filtro;
+                carregarNotificacoes(filtroAtivo);
+                
+                mostrarFlash(`Notificação marcada como ${lida ? 'lida' : 'não lida'}!`, 'sucesso');
+            }
+        }
+
+        // Excluir notificação
+        function excluirNotificacao(id) {
+            const index = notificacoesExemplo.findIndex(n => n.id === id);
+            if (index !== -1) {
+                notificacoesExemplo.splice(index, 1);
+                
+                // Recarregar notificações com filtro atual
+                const filtroAtivo = document.querySelector('.acoes-notificacoes .btn-acao.active').dataset.filtro;
+                carregarNotificacoes(filtroAtivo);
+                
+                mostrarFlash('Notificação excluída com sucesso!', 'sucesso');
+            }
+        }
+
+        // Marcar todas como lidas
+        function marcarTodasLidas() {
+            notificacoesExemplo.forEach(n => n.lida = true);
+            
+            // Recarregar notificações com filtro atual
+            const filtroAtivo = document.querySelector('.acoes-notificacoes .btn-acao.active').dataset.filtro;
+            carregarNotificacoes(filtroAtivo);
+            
+            mostrarFlash('Todas as notificações foram marcadas como lidas!', 'sucesso');
+        }
+
+        // Limpar todas as notificações
+        function limparTodasNotificacoes() {
+            notificacoesExemplo.length = 0;
+            carregarNotificacoes('todas');
+            mostrarFlash('Todas as notificações foram removidas!', 'sucesso');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar data e hora
+            atualizarDataHora();
+            setInterval(atualizarDataHora, 1000);
+            
+            // Carregar notificações iniciais
+            carregarNotificacoes();
+            
+            // Menu interativo
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                    }
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Filtros de notificações
+            const filtrosBtns = document.querySelectorAll('.acoes-notificacoes .btn-acao[data-filtro]');
+            filtrosBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filtro = this.dataset.filtro;
+                    
+                    // Atualizar botões ativos
+                    filtrosBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Carregar notificações filtradas
+                    carregarNotificacoes(filtro);
+                });
+            });
+            
+            // Ações das notificações (delegação de eventos)
+            listaNotificacoesEl.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-notificacao');
+                if (!btn) return;
+                
+                const notificacaoItem = btn.closest('.notificacao-item');
+                const id = parseInt(notificacaoItem.dataset.id);
+                const acao = btn.dataset.acao;
+                
+                switch(acao) {
+                    case 'marcar-lida':
+                        marcarNotificacao(id, true);
+                        break;
+                        
+                    case 'marcar-nao-lida':
+                        marcarNotificacao(id, false);
+                        break;
+                        
+                    case 'excluir':
+                        if (confirm('Tem certeza que deseja excluir esta notificação?')) {
+                            excluirNotificacao(id);
+                        }
+                        break;
+                        
+                    case 'acao-urgente':
+                        alert('Ação urgente requerida! Redirecionando para a página do curso...');
+                        // Simular redirecionamento
+                        break;
+                        
+                    case 'ver-calendario':
+                        alert('Redirecionando para o calendário...');
+                        // window.location.href = "{{ url_for('calendario_aluno') }}";
+                        break;
+                }
+            });
+            
+            // Botão "Marcar Todas como Lidas"
+            document.getElementById('btnMarcarTodasLidas').addEventListener('click', function() {
+                if (confirm('Marcar todas as notificações como lidas?')) {
+                    marcarTodasLidas();
+                }
+            });
+            
+            // Botão "Limpar Todas"
+            document.getElementById('btnLimparNotificacoes').addEventListener('click', function() {
+                if (confirm('Tem certeza que deseja limpar todas as notificações?\nEsta ação não pode ser desfeita.')) {
+                    limparTodasNotificacoes();
+                }
+            });
+            
+            // Configurações de notificações
+            document.querySelectorAll('.switch input').forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const configId = this.id.replace('toggle', '').toLowerCase();
+                    const status = this.checked ? 'ativada' : 'desativada';
+                    
+                    mostrarFlash(`Notificação de ${configId} ${status}!`, 'info');
+                    
+                    // Simular salvamento no servidor
+                    // fetch('/salvar-configuracao', {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({ config: configId, enabled: this.checked })
+                    // });
+                });
+            });
+            
+            // Remover mensagens flash automáticas após 5 segundos
+            setTimeout(() => {
+                document.querySelectorAll('.flash-message').forEach(msg => {
+                    msg.style.animation = 'slideInRight 0.3s ease reverse forwards';
+                    setTimeout(() => msg.remove(), 300);
+                });
+            }, 5000);
+        });
+    </script>
+    <!-- Incluir o JavaScript de configurações -->
+<script src="{{ url_for('static', filename='js/configuracoes.js') }}"></script>
+
+<!-- Incluir JavaScript do servidor para configurações -->
+<script src="{{ url_for('aplicar_configuracoes') }}"></script>
+</body>
+</html>
+[file content end]

@@ -1,0 +1,347 @@
+<!-- view/aluno/capitulo_detalhes.html -->
+{% extends "aluno/base_aluno.html" %}
+
+{% block title %}{{ capitulo.titulo }} - {{ capitulo.curso_titulo }}{% endblock %}
+{% block page_title %}{{ capitulo.titulo }}{% endblock %}
+{% block page_subtitle %}<a href="{{ url_for('curso_detalhes', curso_id=capitulo.curso_id) }}" style="color: var(--azul-secundario); text-decoration: none;"><i class="fas fa-arrow-left"></i> Voltar ao curso</a>{% endblock %}
+
+{% block styles %}
+<style>
+    .capitulo-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 30px;
+    }
+    
+    .conteudo-aula {
+        background: var(--branco);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 6px 15px var(--sombra);
+    }
+    
+    .video-container {
+        background: #000;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        aspect-ratio: 16/9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .materiais-apoio {
+        background: var(--branco);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 6px 15px var(--sombra);
+        margin-top: 30px;
+    }
+    
+    .material-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid var(--cinza-claro);
+    }
+    
+    .material-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: var(--azul-claro);
+        color: var(--azul-secundario);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+    
+    .navegacao-capitulos {
+        background: var(--branco);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 6px 15px var(--sombra);
+    }
+    
+    .navegacao-item {
+        padding: 15px;
+        border-left: 4px solid var(--cinza-claro);
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .navegacao-item:hover {
+        border-left-color: var(--azul-secundario);
+        background: var(--cinza-muito-claro);
+    }
+    
+    .navegacao-item.ativo {
+        border-left-color: var(--azul-secundario);
+        background: var(--cinza-muito-claro);
+    }
+    
+    .navegacao-item.concluido {
+        border-left-color: var(--verde);
+    }
+    
+    .btn-concluir {
+        background: var(--verde);
+        color: var(--branco);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 20px;
+        width: 100%;
+    }
+    
+    .btn-concluir:hover {
+        background: #27ae60;
+    }
+    
+    .btn-proximo {
+        background: var(--azul-secundario);
+        color: var(--branco);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 15px;
+        width: 100%;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="capitulo-container">
+    <div>
+        <div class="conteudo-aula">
+            <h3 style="margin-bottom: 20px; color: var(--azul-principal);">
+                <i class="fas fa-play-circle"></i> Aula Atual
+            </h3>
+            
+            <div class="video-container">
+                <div style="text-align: center;">
+                    <i class="fas fa-play" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                    <p>Player de vídeo</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Duração: 15 minutos</p>
+                </div>
+            </div>
+            
+            <h4 style="color: var(--azul-principal); margin-top: 30px;">Descrição da Aula</h4>
+            <p style="color: var(--cinza-medio); line-height: 1.6;">
+                {{ capitulo.descricao|default('Nesta aula você aprenderá os conceitos fundamentais do tópico. Assista ao vídeo completo e não deixe de fazer os exercícios propostos.') }}
+            </p>
+            
+            <div style="margin-top: 30px;">
+                <button class="btn-concluir" onclick="marcarComoConcluido()">
+                    <i class="fas fa-check-circle"></i> Marcar como Concluído
+                </button>
+            </div>
+        </div>
+        
+        <div class="materiais-apoio">
+            <h4 style="color: var(--azul-principal); margin-bottom: 20px;">
+                <i class="fas fa-paperclip"></i> Materiais de Apoio
+            </h4>
+            
+            <div class="material-item">
+                <div class="material-icon"><i class="fas fa-file-pdf"></i></div>
+                <div>
+                    <h5 style="margin: 0; color: var(--azul-principal);">Slides da Aula</h5>
+                    <p style="margin: 5px 0 0; color: var(--cinza-medio); font-size: 0.9rem;">PDF • 2.4 MB</p>
+                </div>
+                <a href="#" style="margin-left: auto; color: var(--azul-secundario);">Download</a>
+            </div>
+            
+            <div class="material-item">
+                <div class="material-icon"><i class="fas fa-file-code"></i></div>
+                <div>
+                    <h5 style="margin: 0; color: var(--azul-principal);">Exercícios Práticos</h5>
+                    <p style="margin: 5px 0 0; color: var(--cinza-medio); font-size: 0.9rem;">ZIP • 1.8 MB</p>
+                </div>
+                <a href="#" style="margin-left: auto; color: var(--azul-secundario);">Download</a>
+            </div>
+        </div>
+    </div>
+    
+    <div>
+        <div class="navegacao-capitulos">
+            <h4 style="color: var(--azul-principal); margin-bottom: 20px;">
+                <i class="fas fa-list-ol"></i> Aulas deste Capítulo
+            </h4>
+            
+            {% for aula in aulas %}
+            <div class="navegacao-item {% if loop.first %}ativo{% endif %} {% if aula.assistida %}concluido{% endif %}"
+                 onclick="window.location.href='#aula-{{ aula.id }}'">
+                <div style="display: flex; justify-content: space-between;">
+                    <h5 style="margin: 0; color: var(--azul-principal);">{{ aula.titulo }}</h5>
+                    <span style="color: var(--cinza-medio); font-size: 0.9rem;">{{ aula.duracao|default('15 min') }}</span>
+                </div>
+                <p style="margin: 5px 0 0; color: var(--cinza-medio); font-size: 0.9rem;">
+                    {% if aula.assistida %}
+                    <i class="fas fa-check-circle" style="color: var(--verde);"></i> Concluída
+                    {% else %}
+                    <i class="far fa-circle"></i> Pendente
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+            
+            {% if proximo_capitulo %}
+            <a href="{{ url_for('ver_capitulo', capitulo_id=proximo_capitulo.id) }}" 
+               class="btn-proximo">
+                <i class="fas fa-arrow-right"></i> Próximo Capítulo: {{ proximo_capitulo.titulo }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('curso_detalhe', curso_id=capitulo.curso_id) }}" 
+               class="btn-proximo" style="background: var(--verde);">
+                <i class="fas fa-graduation-cap"></i> Voltar ao Curso
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function marcarAulaCompleta(aulaId, capituloId) {
+    const aulaItem = document.querySelector(`[data-aula-id="${aulaId}"]`);
+    const checkbox = aulaItem.querySelector('.aula-checkbox');
+    const estaMarcada = aulaItem.classList.contains('aula-concluida');
+    
+    // Enviar requisição
+    fetch('{{ url_for("marcar_aula_completa") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            aula_id: aulaId,
+            capitulo_id: capituloId,
+            marcar: !estaMarcada  // Inverte o estado atual
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.sucesso) {
+            // Atualizar visual da aula
+            if (!estaMarcada) {
+                aulaItem.classList.add('aula-concluida');
+                checkbox.innerHTML = '<i class="fas fa-check"></i>';
+            } else {
+                aulaItem.classList.remove('aula-concluida');
+                checkbox.innerHTML = '';
+            }
+            
+            // Atualizar progresso do capítulo
+            const progress = data.progresso_capitulo;
+            const progressText = document.querySelector('.progresso-texto');
+            if (progressText) {
+                progressText.textContent = `${progress.concluidas}/${progress.total_aulas} aulas concluídas`;
+            }
+            
+            // Verificar se capítulo foi concluído
+            if (progress.capitulo_concluido) {
+                showChapterCompletedMessage();
+                // Habilitar botão de próximo capítulo se existir
+                const nextBtn = document.querySelector('.btn-proximo');
+                if (nextBtn) nextBtn.disabled = false;
+            }
+            
+            console.log('Progresso atualizado!');
+        } else {
+            alert('Erro: ' + (data.erro || 'Erro desconhecido'));
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro de conexão');
+    });
+}
+
+function showChapterCompletedMessage() {
+    const message = document.createElement('div');
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--verde);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    message.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Capítulo Concluído!</strong>
+                <p style="margin: 5px 0 0; font-size: 0.9rem;">Você pode prosseguir para o próximo.</p>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(message);
+    
+    setTimeout(() => {
+        message.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => message.remove(), 300);
+    }, 3000);
+}
+
+// Marcar todas as aulas de uma vez
+function marcarTodasAulas(capituloId) {
+    if (!confirm('Deseja marcar todas as aulas deste capítulo como concluídas?')) {
+        return;
+    }
+    
+    // Encontrar todas as aulas não concluídas
+    const aulasNaoConcluidas = document.querySelectorAll('.aula-item:not(.aula-concluida)');
+    const aulaIds = Array.from(aulasNaoConcluidas).map(aula => aula.dataset.aulaId);
+    
+    if (aulaIds.length === 0) {
+        alert('Todas as aulas já estão concluídas!');
+        return;
+    }
+    
+    // Marcar uma por uma (simplificado - na prática você poderia criar um endpoint para marcar várias)
+    aulaIds.forEach(aulaId => {
+        setTimeout(() => {
+            marcarAulaCompleta(aulaId, capituloId);
+        }, 100);
+    });
+}
+
+// Desmarcar todas as aulas
+function desmarcarTodasAulas(capituloId) {
+    if (!confirm('Deseja desmarcar todas as aulas deste capítulo?')) {
+        return;
+    }
+    
+    const aulasConcluidas = document.querySelectorAll('.aula-item.aula-concluida');
+    const aulaIds = Array.from(aulasConcluidas).map(aula => aula.dataset.aulaId);
+    
+    if (aulaIds.length === 0) {
+        alert('Nenhuma aula está marcada como concluída!');
+        return;
+    }
+    
+    aulaIds.forEach(aulaId => {
+        setTimeout(() => {
+            marcarAulaCompleta(aulaId, capituloId);
+        }, 100);
+    });
+}
+</script>
+{% endblock %}

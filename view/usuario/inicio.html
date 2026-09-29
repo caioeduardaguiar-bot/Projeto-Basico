@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ======== VARIÁVEIS DE CORES ======== */
+        :root {
+            --azul-escuro: #1e3a5f;
+            --azul-medio: #3a6ea5;
+            --azul-claro: #4b8fcc;
+            --azul-suave: #d7e4ff;
+            --azul-hover: #a7c7ff;
+            --cinza-escuro: #2d3748;
+            --cinza-medio: #4a5568;
+            --cinza-claro: #f2f4f7;
+            --cinza-suave: #e2e8f0;
+            --branco: #ffffff;
+            --gradiente-azul: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%);
+        }
+        
+        /* ======== RESET & BASE ======== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--cinza-claro);
+            color: var(--cinza-escuro);
+            line-height: 1.6;
+        }
+        
+        /* ======== NAVBAR ======== */
+        .navbar {
+            background: var(--gradiente-azul);
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.2);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .logo {
+            color: var(--branco);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        
+        .logo i {
+            color: var(--azul-suave);
+            font-size: 26px;
+        }
+        
+        .menu {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .menu li {
+            position: relative;
+        }
+        
+        .menu a {
+            text-decoration: none;
+            color: var(--azul-suave);
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .menu a i {
+            font-size: 16px;
+        }
+        
+        .menu a:hover {
+            color: var(--branco);
+            transform: translateY(-2px);
+        }
+        
+        .menu a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--azul-hover);
+            border-radius: 2px;
+        }
+        
+        .menu-active a {
+            color: var(--branco);
+        }
+        
+        .menu-active a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--azul-hover);
+            border-radius: 2px;
+        }
+        
+        /* ======== SEÇÃO INÍCIO ======== */
+        #inicio {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+                        url("https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            padding-top: 80px;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 20px;
+        }
+        
+        .hero-content h2 {
+            color: var(--branco);
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero-content p {
+            color: #ddd;
+            font-size: 22px;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            padding: 16px 40px;
+            background: #013d96;
+            color: var(--branco);
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px #1abc9c4d;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #225ad2;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(26, 188, 156, 0.4);
+        }
+        
+        .btn i {
+            font-size: 20px;
+        }
+        
+        /* ======== SEÇÕES DE CONTEÚDO ======== */
+        .section-container {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 30px;
+        }
+        
+        .section-title {
+            color: var(--azul-escuro);
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            color: var(--cinza-medio);
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+        
+        /* ======== CONTAINER DAS PÁGINAS ======== */
+        .page-container {
+            background: var(--branco);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(30, 58, 95, 0.1);
+            margin-bottom: 60px;
+            border: 1px solid var(--cinza-suave);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: var(--gradiente-azul);
+        }
+        
+        .page-title {
+            color: var(--azul-medio);
+            font-size: 32px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title i {
+            background: var(--azul-suave);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--azul-medio);
+        }
+        
+        .page-content {
+            color: var(--cinza-medio);
+            font-size: 18px;
+            line-height: 1.7;
+        }
+        
+        .page-content p {
+            margin-bottom: 25px;
+        }
+        
+        /* ======== RESPONSIVIDADE ======== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 25px;
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .menu {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            #inicio {
+                height: auto;
+                min-height: 100vh;
+                padding: 100px 20px 50px;
+            }
+            
+            .hero-content h2 {
+                font-size: 36px;
+            }
+            
+            .hero-content p {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+            
+            .section-container {
+                padding: 0 20px;
+                margin: 60px auto;
+            }
+            
+            .section-title {
+                font-size: 36px;
+            }
+            
+            .page-container {
+                padding: 30px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 24px;
+            }
+            
+            .hero-content h2 {
+                font-size: 28px;
+            }
+            
+            .hero-content p {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                font-size: 32px;
+            }
+            
+            .page-container {
+                padding: 25px 20px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+            
+            .page-content {
+                font-size: 16px;
+            }
+            
+            .menu a {
+                font-size: 15px;
+            }
+        }
+        
+        /* Estilo para os links das seções */
+        .section-link {
+            display: block;
+            position: relative;
+            top: -80px;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- ======== NAVBAR ======== -->
+    <nav class="navbar">
+        <div class="logo" onclick="goToSection('inicio')">
+            <i class="fas fa-school"></i> EduConnect
+        </div>
+        <ul class="menu">
+            <li><a href="javascript:void(0)" onclick="goToSection('inicio')"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="javascript:void(0)" onclick="goToSection('politicas')"><i class="fas fa-file-contract"></i> Políticas de Uso</a></li>
+            <li><a href="javascript:void(0)" onclick="goToSection('eventos')"><i class="fas fa-calendar-check"></i> Eventos</a></li>
+            <li><a href="javascript:void(0)" onclick="goToSection('contatos')"><i class="fas fa-envelope"></i> Contatos</a></li>
+        </ul>
+    </nav>
+    
+    <!-- ======== ÂNCORAS INVISÍVEIS ======== -->
+    <a id="anchor-inicio" class="section-link"></a>
+    
+    <!-- ======== SEÇÃO INÍCIO ======== -->
+    <section id="inicio">
+        <div class="hero-content">
+            <h2>Bem-vindo à EduConnect</h2>
+            <p>Um espaço onde alunos, professores e a escola se conectam para criar uma experiência educacional completa e integrada.</p>
+           <div> 
+            <button class="btn" onclick="goToSection('login')">
+                <a href="{{ url_for ('login') }}">Entrar</a>
+            </button>
+           </div>
+        </div>
+    </section>
+
+    <!-- ======== ÂNCORA PARA POLÍTICAS ======== -->
+    <a id="anchor-politicas" class="section-link"></a>
+    
+    <!-- ======== SEÇÃO POLÍTICAS DE USO ======== -->
+    <section id="politicas">
+        <div class="section-container">
+            <h2 class="section-title">Políticas de Uso</h2>
+            <p class="section-subtitle">Diretrizes e normas para utilização da nossa plataforma educacional</p>
+            
+            <div class="page-container">
+                <h3 class="page-title"><i class="fas fa-shield-alt"></i> Segurança e Privacidade</h3>
+                
+                <div class="page-content">
+                    <p>Este site foi criado apenas para fins educativos e de estudo. As informações aqui apresentadas servem para apoiar o aprendizado de programação, desenvolvimento web e boas práticas tecnológicas.</p>
+                    
+                    <p>Nenhum dado pessoal é usado com fins comerciais, e todas as atividades são pensadas para manter um ambiente seguro, inclusivo e propício para o aprendizado colaborativo.</p>
+                    
+                    <div style="display: inline-block; background: var(--azul-suave); color: var(--azul-escuro); padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 15px 0; border-left: 4px solid var(--azul-medio);">
+                        <i class="fas fa-lock"></i> Ambiente 100% Seguro
+                    </div>
+                    
+                    <p>É importante ressaltar que todas as funcionalidades foram desenvolvidas com o intuito de demonstrar técnicas de programação e design web, servindo como portfólio educacional para os desenvolvedores.</p>
+                    
+                    <div style="height: 2px; background: linear-gradient(to right, transparent, var(--azul-claro), transparent); margin: 35px 0;"></div>
+                    
+                    <h3 style="color: var(--azul-medio); margin: 25px 0 15px 0;">Diretrizes de Uso</h3>
+                    
+                    <ul style="list-style: none; margin: 30px 0;">
+                        <li style="padding: 20px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); transition: all 0.3s; display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-check-circle" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                            <strong>Uso Educacional:</strong> Esta plataforma é destinada exclusivamente para fins educacionais
+                        </li>
+                        <li style="padding: 20px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); transition: all 0.3s; display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-check-circle" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                            <strong>Privacidade:</strong> Seus dados estão seguros e não são compartilhados com terceiros
+                        </li>
+                        <li style="padding: 20px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); transition: all 0.3s; display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-check-circle" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                            <strong>Colaboração:</strong> Incentivamos o compartilhamento de conhecimento de forma respeitosa
+                        </li>
+                        <li style="padding: 20px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); transition: all 0.3s; display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-check-circle" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                            <strong>Responsabilidade:</strong> Todo conteúdo é monitorado para garantir um ambiente seguro
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Seção de Informações -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0;">
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Propósito Educacional</h3>
+                        </div>
+                        <p style="color: var(--cinza-medio); line-height: 1.6;">Esta plataforma foi desenvolvida como um projeto de estudo, visando aplicar conceitos de desenvolvimento web e design de interfaces.</p>
+                    </div>
+                    
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Desenvolvimento Técnico</h3>
+                        </div>
+                        <p style="color: var(--cinza-medio); line-height: 1.6;">Utilizamos as melhores práticas de programação para criar uma experiência de usuário fluida e responsiva em todos os dispositivos.</p>
+                    </div>
+                    
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Comunidade Colaborativa</h3>
+                        </div>
+                        <p style="color: var(--cinza-medio); line-height: 1.6;">Fomentamos um ambiente de aprendizado mútuo onde todos podem contribuir e evoluir juntos no mundo da tecnologia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ======== ÂNCORA PARA EVENTOS ======== -->
+    <a id="anchor-eventos" class="section-link"></a>
+    
+    <!-- ======== SEÇÃO EVENTOS ======== -->
+    <section id="eventos">
+        <div class="section-container">
+            <h2 class="section-title">Eventos Escolares</h2>
+            <p class="section-subtitle">Fique por dentro das atividades, palestras e novidades da nossa comunidade</p>
+            
+            <div class="page-container">
+                <h3 class="page-title"><i class="fas fa-calendar-alt"></i> Próximos Eventos</h3>
+                
+                <div class="page-content">
+                    <p>Aqui você encontrará eventos, atividades e novidades relacionadas ao ambiente escolar e aos projetos de estudo do site. Em breve, novos eventos serão adicionados.</p>
+                    
+                    <div style="display: inline-block; background: var(--azul-suave); color: var(--azul-escuro); padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 15px 0; border-left: 4px solid var(--azul-medio);">
+                        <i class="fas fa-bell"></i> Novos eventos em breve!
+                    </div>
+                    
+                    <p>Nosso calendário está em constante atualização com atividades que promovem o aprendizado e a integração entre alunos, professores e a EduConnect.</p>
+                </div>
+                
+                <!-- Calendário de Eventos -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin: 40px 0;">
+                    <div style="background: var(--branco); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(30, 58, 95, 0.1); border: 1px solid var(--cinza-suave);">
+                        <div style="background: var(--gradiente-azul); color: var(--branco); padding: 20px; text-align: center;">
+                            <div style="font-size: 36px; font-weight: 800; line-height: 1;">15</div>
+                            <div style="font-size: 18px; font-weight: 600; opacity: 0.9;">OUT</div>
+                        </div>
+                        <div style="padding: 25px;">
+                            <div style="color: var(--azul-escuro); font-size: 22px; margin-bottom: 10px; font-weight: 700;">Palestra: Tecnologia na Educação</div>
+                            <div style="color: var(--azul-medio); font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-clock" style="color: var(--azul-claro);"></i> 14:00 - 16:00
+                            </div>
+                            <div style="color: var(--cinza-medio); line-height: 1.6;">
+                                Discussão sobre como as novas tecnologias estão transformando o ambiente educacional e as melhores práticas para implementação.
+                            </div>
+                            <div style="display: inline-block; padding: 6px 15px; border-radius: 50px; font-size: 14px; font-weight: 600; margin-top: 15px; background: var(--azul-suave); color: var(--azul-escuro);">
+                                Em Breve
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--branco); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(30, 58, 95, 0.1); border: 1px solid var(--cinza-suave);">
+                        <div style="background: var(--gradiente-azul); color: var(--branco); padding: 20px; text-align: center;">
+                            <div style="font-size: 36px; font-weight: 800; line-height: 1;">22</div>
+                            <div style="font-size: 18px; font-weight: 600; opacity: 0.9;">OUT</div>
+                        </div>
+                        <div style="padding: 25px;">
+                            <div style="color: var(--azul-escuro); font-size: 22px; margin-bottom: 10px; font-weight: 700;">Workshop: Programação Web</div>
+                            <div style="color: var(--azul-medio); font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-clock" style="color: var(--azul-claro);"></i> 09:00 - 12:00
+                            </div>
+                            <div style="color: var(--cinza-medio); line-height: 1.6;">
+                                Workshop prático de desenvolvimento web para iniciantes, abordando HTML, CSS e JavaScript básico.
+                            </div>
+                            <div style="display: inline-block; padding: 6px 15px; border-radius: 50px; font-size: 14px; font-weight: 600; margin-top: 15px; background: var(--azul-suave); color: var(--azul-escuro);">
+                                Em Breve
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Seção de Informações -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 40px 0;">
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Divulgação</h3>
+                        </div>
+                        <p style="color: var(--cinza-medio); line-height: 1.6;">Todos os eventos são divulgados com antecedência para que a EduConnect possa se programar e participar.</p>
+                    </div>
+                    
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Sugestões</h3>
+                        </div>
+                        <p style="color: var(--cinza-medio); line-height: 1.6;">Tem alguma ideia para evento ou atividade? Entre em contato conosco para sugerir novas iniciativas.</p>
+                    </div>
+                    
+                    <div style="background: var(--branco); border-radius: 16px; padding: 30px; box-shadow: 0 8px 25px rgba(30, 58, 95, 0.08); border: 1px solid var(--cinza-suave);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="background: var(--azul-suave); width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--azul-medio);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 style="color: var(--azul-escuro); font-size: 22px; font-weight: 700;">Participação</h3>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- ======== ÂNCORA PARA CONTATOS ======== -->
+<a id="anchor-contatos" class="section-link"></a>
+
+<!-- ======== SEÇÃO CONTATOS ======== -->
+<section id="contatos">
+    <div class="section-container">
+        <h2 class="section-title">Entre em Contato</h2>
+        <p class="section-subtitle">Estamos aqui para ajudar! Entre em contato conosco para dúvidas, sugestões ou apoio técnico</p>
+        
+        <div class="page-container">
+            <h3 class="page-title"><i class="fas fa-headset"></i> Suporte e Atendimento</h3>
+            
+            <div class="page-content">
+                <p>Para dúvidas, sugestões ou apoio técnico, entre em contato com a equipe responsável pelo site. Responderemos suas mensagens o mais breve possível, sempre dentro do horário comercial e com o compromisso de oferecer um atendimento de qualidade.</p>
+            </div>
+            
+            <!-- Lista de Contatos -->
+            <div style="margin: 30px 0;">
+                <div style="padding: 18px 22px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-life-ring" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                    <span style="font-weight: 600; color: var(--azul-escuro); min-width: 180px;">Email para suporte:</span>
+                    <span>suporte@educonnect.com</span>
+                </div>
+                
+                <div style="padding: 18px 22px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-user-cog" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                    <span style="font-weight: 600; color: var(--azul-escuro); min-width: 180px;">Email de administração:</span>
+                    <span>administracao@educonnect.com</span>
+                </div>
+                
+                <div style="padding: 18px 22px; margin-bottom: 15px; background: var(--cinza-suave); border-radius: 12px; border-left: 5px solid var(--azul-claro); display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-clock" style="color: var(--azul-medio); font-size: 20px; width: 30px;"></i>
+                    <span style="font-weight: 600; color: var(--azul-escuro); min-width: 180px;">Atendimento Web:</span>
+                    <span>Disponível em horário comercial</span>
+                </div>
+            </div>
+            
+            <!-- Tabela de Horários de Atendimento -->
+            <div style="margin: 40px 0;">
+                <h3 style="color: var(--azul-medio); margin-bottom: 20px; font-size: 22px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-business-time"></i> Horário de Atendimento Web
+                </h3>
+                
+                <div style="overflow-x: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(30, 58, 95, 0.1);">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--branco);">
+                        <thead>
+                            <tr style="background: var(--gradiente-azul); color: var(--branco);">
+                                <th style="padding: 18px 20px; text-align: left; font-weight: 600; font-size: 16px; border-right: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <i class="fas fa-calendar-day"></i> Dias da Semana
+                                </th>
+                                <th style="padding: 18px 20px; text-align: left; font-weight: 600; font-size: 16px; border-right: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <i class="fas fa-clock"></i> Horário
+                                </th>
+                                <th style="padding: 18px 20px; text-align: left; font-weight: 600; font-size: 16px;">
+                                    <i class="fas fa-info-circle"></i> Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Segunda-feira</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 18:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #d1f7c4; color: #0e7c1c; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Aberto
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave); background: rgba(248, 249, 250, 0.5);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Terça-feira</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 18:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #d1f7c4; color: #0e7c1c; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Aberto
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Quarta-feira</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 18:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #d1f7c4; color: #0e7c1c; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Aberto
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave); background: rgba(248, 249, 250, 0.5);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Quinta-feira</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 18:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #d1f7c4; color: #0e7c1c; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Aberto
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Sexta-feira</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 18:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #d1f7c4; color: #0e7c1c; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Aberto
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--cinza-suave); background: rgba(248, 249, 250, 0.5);">
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Sábado</td>
+                                <td style="padding: 16px 20px; color: var(--azul-medio); font-weight: 600;">08:00 - 14:00</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-clock"></i> Horário Reduzido
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 16px 20px; color: var(--cinza-escuro); font-weight: 600;">Domingo</td>
+                                <td style="padding: 16px 20px; color: var(--cinza-medio);">Fechado</td>
+                                <td style="padding: 16px 20px;">
+                                    <span style="background: #f8d7da; color: #721c24; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                                        <i class="fas fa-times-circle"></i> Fechado
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 25px; padding: 20px; background: var(--azul-suave); border-radius: 12px; border-left: 4px solid var(--azul-medio);">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <i class="fas fa-info-circle" style="color: var(--azul-medio); font-size: 20px; margin-top: 2px;"></i>
+                        <div>
+                            <h4 style="color: var(--azul-escuro); margin-bottom: 8px; font-size: 16px;">Informações Importantes:</h4>
+                            <ul style="color: var(--cinza-medio); margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.6;">
+                                <li>Atendimento interno disponível para alunos, pais e responsáveis</li>
+                                <li>Para atendimento emergencial fora do horário, entre em contato pelo e-mail de suporte</li>
+                                <li>Feriados seguem o horário de sábado (08:00 - 14:00)</li>
+                                <li>Recesso escolar: consulte o calendário acadêmico</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <script>
+        // ======== FUNÇÃO SIMPLES E DIRETA ========
+        function goToSection(sectionId) {
+            console.log("Tentando ir para: " + sectionId);
+            
+            // Primeiro tenta encontrar pela âncora
+            let targetElement = document.getElementById("anchor-" + sectionId);
+            
+            // Se não encontrar, tenta pelo ID direto
+            if (!targetElement) {
+                targetElement = document.getElementById(sectionId);
+            }
+            
+            if (targetElement) {
+                console.log("Elemento encontrado:", targetElement);
+                
+                // Calcula a posição considerando a navbar
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                
+                console.log("Posição calculada:", offsetPosition);
+                
+                // Faz o scroll
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Atualiza o menu ativo
+                updateActiveMenu(sectionId);
+            } else {
+                console.error("Elemento não encontrado: " + sectionId);
+                // Fallback: tenta usar scrollIntoView
+                const fallbackElement = document.getElementById(sectionId);
+                if (fallbackElement) {
+                    fallbackElement.scrollIntoView({ behavior: 'smooth' });
+                    updateActiveMenu(sectionId);
+                }
+            }
+        }
+        
+        function updateActiveMenu(sectionId) {
+            // Remove a classe ativa de todos
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('menu-active');
+            });
+            
+            // Encontra o link correto
+            const menuItems = document.querySelectorAll('.menu a');
+            menuItems.forEach(item => {
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(sectionId)) {
+                    item.parentElement.classList.add('menu-active');
+                }
+            });
+        }
+        
+        // ======== INICIALIZAÇÃO ========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM carregado");
+            
+            // Configura todos os links do menu
+            const menuLinks = document.querySelectorAll('.menu a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Extrai o sectionId do onclick
+                    const onclickAttr = this.getAttribute('onclick');
+                    if (onclickAttr) {
+                        const match = onclickAttr.match(/goToSection\('([^']+)'\)/);
+                        if (match && match[1]) {
+                            goToSection(match[1]);
+                        }
+                    }
+                });
+            });
+            
+            // Configura o logo
+            document.querySelector('.logo').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToSection('inicio');
+            });
+            
+            // Inicializa com a seção ativa
+            updateActiveMenu('inicio');
+        });
+        
+        // Fallback para garantir que a função esteja disponível globalmente
+        window.goToSection = goToSection;
+        window.updateActiveMenu = updateActiveMenu;
+    </script>
+</body>
+</html>
+                    </div>
+                </div>
+                
+                <!-- Rodapé dos Desenvolvedores -->
+                <div style="background: var(--gradiente-azul); border-radius: 20px; padding: 40px; margin-top: 60px; text-align: center; color: var(--branco);">
+                    <div style="font-size: 20px; font-weight: 600; color: var(--azul-suave); margin-bottom: 20px; letter-spacing: 1px;">DESENVOLVIDO POR</div>
+                    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+                        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px; width: 200px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 32px; color: var(--branco);">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div style="font-size: 20px; font-weight: 700; margin-bottom: 5px;">Rafael</div>
+                            <div style="font-size: 14px; color: var(--azul-suave); font-weight: 500;">Desenvolvedor Front-end</div>
+                        </div>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px; width: 200px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 32px; color: var(--branco);">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div style="font-size: 20px; font-weight: 700; margin-bottom: 5px;">Gustavo</div>
+                            <div style="font-size: 14px; color: var(--azul-suave); font-weight: 500;">Designer UI/UX</div>
+                        </div>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 25px; width: 200px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 32px; color: var(--branco);">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div style="font-size: 20px; font-weight: 700; margin-bottom: 5px;">Caio</div>
+                            <div style="font-size: 14px; color: var(--azul-suave); font-weight: 500;">Desenvolvedor Back-end</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ======== FUNÇÃO SIMPLES E DIRETA ========
+        function goToSection(sectionId) {
+            console.log("Tentando ir para: " + sectionId);
+            
+            // Primeiro tenta encontrar pela âncora
+            let targetElement = document.getElementById("anchor-" + sectionId);
+            
+            // Se não encontrar, tenta pelo ID direto
+            if (!targetElement) {
+                targetElement = document.getElementById(sectionId);
+            }
+            
+            if (targetElement) {
+                console.log("Elemento encontrado:", targetElement);
+                
+                // Calcula a posição considerando a navbar
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                
+                console.log("Posição calculada:", offsetPosition);
+                
+                // Faz o scroll
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Atualiza o menu ativo
+                updateActiveMenu(sectionId);
+            } else {
+                console.error("Elemento não encontrado: " + sectionId);
+                // Fallback: tenta usar scrollIntoView
+                const fallbackElement = document.getElementById(sectionId);
+                if (fallbackElement) {
+                    fallbackElement.scrollIntoView({ behavior: 'smooth' });
+                    updateActiveMenu(sectionId);
+                }
+            }
+        }
+        
+        function updateActiveMenu(sectionId) {
+            // Remove a classe ativa de todos
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('menu-active');
+            });
+            
+            // Encontra o link correto
+            const menuItems = document.querySelectorAll('.menu a');
+            menuItems.forEach(item => {
+                if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(sectionId)) {
+                    item.parentElement.classList.add('menu-active');
+                }
+            });
+        }
+        
+        // ======== INICIALIZAÇÃO ========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM carregado");
+            
+            // Configura todos os links do menu
+            const menuLinks = document.querySelectorAll('.menu a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Extrai o sectionId do onclick
+                    const onclickAttr = this.getAttribute('onclick');
+                    if (onclickAttr) {
+                        const match = onclickAttr.match(/goToSection\('([^']+)'\)/);
+                        if (match && match[1]) {
+                            goToSection(match[1]);
+                        }
+                    }
+                });
+            });
+            
+            // Configura o logo
+            document.querySelector('.logo').addEventListener('click', function(e) {
+                e.preventDefault();
+                goToSection('inicio');
+            });
+            
+            // Inicializa com a seção ativa
+            updateActiveMenu('inicio');
+        });
+        
+        // Fallback para garantir que a função esteja disponível globalmente
+        window.goToSection = goToSection;
+        window.updateActiveMenu = updateActiveMenu;
+    </script>
+</body>
+</html>

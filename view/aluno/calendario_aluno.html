@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário - Portal do Aluno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET E ESTILOS GERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --azul-principal: #2c3e50;
+            --azul-secundario: #3498db;
+            --azul-claro: #ecf0f1;
+            --azul-hover: #2980b9;
+            --cinza-escuro: #34495e;
+            --cinza-medio: #7f8c8d;
+            --cinza-claro: #bdc3c7;
+            --branco: #ffffff;
+            --verde: #27ae60;
+            --laranja: #e67e22;
+            --vermelho: #e74c3c;
+            --roxo: #9b59b6;
+            --amarelo: #f1c40f;
+            --sombra: rgba(0, 0, 0, 0.1);
+            --gradiente-azul: linear-gradient(135deg, #3498db, #2c3e50);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== MENU LATERAL ===== */
+        .menu-aluno {
+            width: 280px;
+            background: var(--azul-principal);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            box-shadow: 5px 0 15px var(--sombra);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        /* Cabeçalho do menu */
+        .menu-header {
+            padding: 30px 20px;
+            background: var(--cinza-escuro);
+            border-bottom: 3px solid var(--azul-secundario);
+            text-align: center;
+        }
+
+        .aluno-avatar {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: var(--gradiente-azul);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--azul-secundario);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .aluno-avatar span {
+            color: var(--branco);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .menu-header h2 {
+            color: var(--branco);
+            font-size: 1.5rem;
+            margin: 10px 0 5px;
+            font-weight: 600;
+        }
+
+        .menu-header p {
+            color: var(--cinza-claro);
+            font-size: 0.9rem;
+            margin: 2px 0;
+        }
+
+        /* Lista de navegação */
+        .menu-nav {
+            padding: 25px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 25px;
+            color: var(--azul-claro);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 3px 0;
+        }
+
+        .menu-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--azul-secundario);
+            color: var(--branco);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid var(--azul-secundario);
+            color: var(--branco);
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Badge de notificações */
+        /* .notificacao-badge {
+            background: var(--vermelho);
+            color: var(--branco);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        } */
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Separador */
+        .menu-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--cinza-medio), transparent);
+            margin: 20px 25px;
+        }
+
+        /* Menu footer */
+        .menu-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--cinza-medio);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--cinza-escuro);
+        }
+
+        .btn-sair {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: var(--branco);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-sair:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .conteudo-principal {
+            margin-left: 280px;
+            padding: 30px;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        /* Barra superior */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--cinza-claro);
+        }
+
+        .welcome-message h1 {
+            color: var(--azul-principal);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-message p {
+            color: var(--cinza-medio);
+            font-size: 1rem;
+        }
+
+        .data-hora {
+            background: var(--branco);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--sombra);
+            font-weight: 600;
+            color: var(--azul-principal);
+            border-left: 4px solid var(--azul-secundario);
+        }
+
+        /* ===== ESTILOS DO CALENDÁRIO ===== */
+        
+        /* Container principal do calendário */
+        .calendario-container {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 15px var(--sombra);
+            margin-bottom: 30px;
+        }
+
+        /* Cabeçalho do calendário */
+        .calendario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--azul-claro);
+        }
+
+        .calendario-header h3 {
+            color: var(--azul-principal);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Controles de navegação */
+        .calendario-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controle-btn {
+            background: var(--azul-claro);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--azul-principal);
+        }
+
+        .controle-btn:hover {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            transform: translateY(-2px);
+        }
+
+        .mes-ano {
+            font-weight: 600;
+            color: var(--azul-principal);
+            font-size: 1.2rem;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Dias da semana */
+        .dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .dia-semana {
+            font-weight: 600;
+            color: var(--cinza-escuro);
+            padding: 15px 5px;
+            background: var(--azul-claro);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Grid de dias do mês */
+        .dias-mes {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .dia {
+            background: var(--branco);
+            border: 1px solid var(--cinza-claro);
+            border-radius: 8px;
+            padding: 15px 5px;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dia:hover {
+            background: var(--azul-claro);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px var(--sombra);
+        }
+
+        .dia-numero {
+            font-weight: 600;
+            color: var(--azul-principal);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .dia.outro-mes {
+            background: #f8f9fa;
+            color: var(--cinza-medio);
+        }
+
+        .dia.hoje {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border: 2px solid var(--azul-secundario);
+        }
+
+        .dia.hoje .dia-numero {
+            color: var(--azul-secundario);
+            font-weight: 700;
+        }
+
+        /* Eventos no calendário */
+        .evento {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin: 3px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .evento:hover {
+            opacity: 0.9;
+            transform: translateX(3px);
+        }
+
+        .evento.aula {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .evento.trabalho {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+        }
+
+        .evento.prova {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .evento.entrega {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .evento.feriado {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .evento.outro {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        /* Legenda de eventos */
+        .legenda-eventos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--azul-claro);
+            border-radius: 10px;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--cinza-escuro);
+        }
+
+        .legenda-cor {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        /* Lista de eventos do dia */
+        .eventos-dia {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 6px 15px var(--sombra);
+            margin-bottom: 30px;
+        }
+
+        .eventos-dia h3 {
+            color: var(--azul-principal);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--azul-secundario);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lista-eventos {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .evento-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--azul-claro);
+            border-radius: 10px;
+            border-left: 4px solid var(--azul-secundario);
+            transition: all 0.3s ease;
+        }
+
+        .evento-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px var(--sombra);
+        }
+
+        .evento-item.aula { border-left-color: #3498db; }
+        .evento-item.trabalho { border-left-color: #e67e22; }
+        .evento-item.prova { border-left-color: #e74c3c; }
+        .evento-item.entrega { border-left-color: #27ae60; }
+        .evento-item.feriado { border-left-color: #9b59b6; }
+
+        .evento-hora {
+            background: var(--branco);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--azul-principal);
+            min-width: 100px;
+            text-align: center;
+            margin-right: 15px;
+        }
+
+        .evento-info h4 {
+            color: var(--azul-principal);
+            margin-bottom: 5px;
+        }
+
+        .evento-info p {
+            color: var(--cinza-medio);
+            font-size: 0.9rem;
+        }
+
+        .evento-curso {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--cinza-escuro);
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Filtros do calendário */
+        .filtros-calendario {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .filtro-btn {
+            background: var(--branco);
+            border: 1px solid var(--cinza-claro);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--cinza-escuro);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filtro-btn:hover {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            border-color: var(--azul-secundario);
+        }
+
+        .filtro-btn.active {
+            background: var(--azul-secundario);
+            color: var(--branco);
+            border-color: var(--azul-secundario);
+        }
+
+        /* Modal de evento */
+        .modal-evento {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--branco);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--azul-claro);
+        }
+
+        .modal-header h3 {
+            color: var(--azul-principal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--cinza-medio);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--vermelho);
+            transform: rotate(90deg);
+        }
+
+        .modal-info {
+            margin: 20px 0;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .info-item i {
+            color: var(--azul-secundario);
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        .info-item h4 {
+            color: var(--azul-principal);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .info-item p {
+            color: var(--cinza-medio);
+            font-size: 0.9rem;
+        }
+
+        /* Botões de ação */
+        .acoes-evento {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-acao {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primario {
+            background: var(--azul-secundario);
+            color: var(--branco);
+        }
+
+        .btn-primario:hover {
+            background: var(--azul-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secundario {
+            background: var(--cinza-claro);
+            color: var(--cinza-escuro);
+        }
+
+        .btn-secundario:hover {
+            background: var(--cinza-medio);
+            transform: translateY(-2px);
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 1024px) {
+            .menu-aluno {
+                width: 250px;
+            }
+            
+            .conteudo-principal {
+                margin-left: 250px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu-aluno {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: 0 4px 12px var(--sombra);
+            }
+            
+            .conteudo-principal {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .menu-nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 15px;
+            }
+            
+            .menu-item {
+                flex: 1;
+                min-width: 150px;
+                margin: 5px;
+                border-radius: 10px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                justify-content: center;
+                text-align: center;
+                flex-direction: column;
+                padding: 15px 10px;
+            }
+            
+            .menu-item:hover {
+                border-left: none;
+                border-bottom: 3px solid var(--azul-secundario);
+                transform: translateY(-5px);
+            }
+            
+            .menu-item.active {
+                border-left: none;
+                border-bottom: 3px solid var(--azul-secundario);
+            }
+            
+            .menu-item i {
+                margin-right: 0;
+                margin-bottom: 8px;
+                font-size: 1.5rem;
+            }
+            
+            .menu-footer {
+                position: relative;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .data-hora {
+                align-self: flex-start;
+            }
+            
+            .calendario-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .dias-mes .dia {
+                min-height: 80px;
+                padding: 10px 3px;
+            }
+            
+            .evento {
+                font-size: 0.7rem;
+                padding: 3px 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dias-semana, .dias-mes {
+                gap: 5px;
+            }
+            
+            .dia-semana {
+                padding: 10px 3px;
+                font-size: 0.8rem;
+            }
+            
+            .dias-mes .dia {
+                min-height: 70px;
+                padding: 8px 2px;
+            }
+            
+            .evento {
+                font-size: 0.65rem;
+                padding: 2px 4px;
+                margin: 2px 0;
+            }
+            
+            .filtros-calendario {
+                justify-content: center;
+            }
+            
+            .filtro-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .legenda-eventos {
+                justify-content: center;
+            }
+            
+            .acoes-evento {
+                flex-direction: column;
+            }
+            
+            .btn-acao {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Lateral -->
+    <nav class="menu-aluno">
+        <!-- Cabeçalho do Menu -->
+        <div class="menu-header">
+            <div class="aluno-avatar">
+                <span>{{ session.usuario[:2]|upper if session.usuario else 'AL' }}</span>
+            </div>
+            <h2>Bem-vindo, {{ session.usuario or 'Aluno' }}!</h2>
+            <p>ID: {{ session.id_aluno or 'N/A' }}</p>
+        </div>
+
+        <!-- Navegação -->
+        <div class="menu-nav">
+            <a href="{{ url_for('home_aluno') }}" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </a>
+            
+            <a href="{{ url_for('cursos_aluno') }}" class="menu-item">
+                <i class="fas fa-book"></i>
+                <span>Meus Cursos</span>
+            </a>
+            
+            <a href="{{ url_for('calendario_aluno') }}" class="menu-item active">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendário</span>
+                <span class="notificacao-badge" id="badgeCalendario">.</span>
+            </a>
+            
+            <div class="menu-divider"></div>
+            
+            <a href="{{url_for('desempenho_aluno')}}" class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Desempenho</span>
+            </a>
+            
+            <a href="{{url_for('notificacoes_aluno')}}" class="menu-item">
+                <i class="fas fa-bell"></i>
+                <span>Notificações</span>
+                <span class="notificacao-badge"></span>
+            </a>
+            
+            <a href="{{url_for('perfil_aluno')}}" class="menu-item">
+                <i class="fas fa-user"></i>
+                <span>Meu Perfil</span>
+            </a>
+            
+            <a href="{{url_for('configuracoes_aluno')}}" class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Configurações</span>
+            </a>
+        </div>
+
+        <!-- Rodapé do Menu -->
+        <div class="menu-footer">
+            <a href="{{ url_for('logout') }}" class="btn-sair">
+                <i class="fas fa-sign-out-alt"></i>
+                Sair do Sistema
+            </a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="conteudo-principal">
+        <!-- Barra Superior -->
+        <div class="top-bar">
+            <div class="welcome-message">
+                <h1>Calendário Acadêmico</h1>
+                <p>Acompanhe suas aulas, prazos e eventos importantes</p>
+            </div>
+            <div class="data-hora" id="dataHora">
+                <!-- JavaScript vai preencher aqui -->
+            </div>
+        </div>
+
+        <!-- Filtros do Calendário -->
+        <div class="filtros-calendario">
+            <button class="filtro-btn active" data-tipo="todos">
+                <i class="fas fa-th"></i>
+                Todos
+            </button>
+            <button class="filtro-btn" data-tipo="aula">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Aulas
+            </button>
+            <button class="filtro-btn" data-tipo="trabalho">
+                <i class="fas fa-tasks"></i>
+                Trabalhos
+            </button>
+            <button class="filtro-btn" data-tipo="prova">
+                <i class="fas fa-file-alt"></i>
+                Provas
+            </button>
+            <button class="filtro-btn" data-tipo="entrega">
+                <i class="fas fa-paper-plane"></i>
+                Entregas
+            </button>
+            <button class="filtro-btn" data-tipo="feriado">
+                <i class="fas fa-umbrella-beach"></i>
+                Feriados
+            </button>
+        </div>
+
+        <!-- Container do Calendário -->
+        <div class="calendario-container">
+            <!-- Cabeçalho do Calendário -->
+            <div class="calendario-header">
+                <h3><i class="fas fa-calendar"></i> Calendário</h3>
+                <div class="calendario-controls">
+                    <button class="controle-btn" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="mes-ano" id="mesAno">Dezembro 2024</div>
+                    <button class="controle-btn" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="controle-btn" id="todayBtn">
+                        <i class="fas fa-calendar-day"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dias da semana -->
+            <div class="dias-semana">
+                <div class="dia-semana">Dom</div>
+                <div class="dia-semana">Seg</div>
+                <div class="dia-semana">Ter</div>
+                <div class="dia-semana">Qua</div>
+                <div class="dia-semana">Qui</div>
+                <div class="dia-semana">Sex</div>
+                <div class="dia-semana">Sáb</div>
+            </div>
+
+            <!-- Grid de dias do mês -->
+            <div class="dias-mes" id="diasMes">
+                <!-- JavaScript vai preencher aqui -->
+            </div>
+
+            <!-- Legenda de eventos -->
+            <div class="legenda-eventos">
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #3498db;"></div>
+                    <span>Aula</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #e67e22;"></div>
+                    <span>Trabalho</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #e74c3c;"></div>
+                    <span>Prova</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #27ae60;"></div>
+                    <span>Entrega</span>
+                </div>
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #9b59b6;"></div>
+                    <span>Feriado</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eventos do Dia Selecionado -->
+        <div class="eventos-dia">
+            <h3><i class="fas fa-list-alt"></i> Eventos de Hoje</h3>
+            <div class="lista-eventos" id="listaEventos">
+                <div class="evento-item aula">
+                    <div class="evento-hora">08:00 - 10:00</div>
+                    <div class="evento-info">
+                        <h4>Cálculo I</h4>
+                        <p>Aula sobre derivadas e integrais</p>
+                        <span class="evento-curso">MAT001</span>
+                    </div>
+                </div>
+                
+                <div class="evento-item trabalho">
+                    <div class="evento-hora">14:00</div>
+                    <div class="evento-info">
+                        <h4>Entrega Trabalho Python</h4>
+                        <p>Projeto final - Sistema de gerenciamento</p>
+                        <span class="evento-curso">PROG101</span>
+                    </div>
+                </div>
+                
+                <div class="evento-item prova">
+                    <div class="evento-hora">16:00 - 18:00</div>
+                    <div class="evento-info">
+                        <h4>Prova História</h4>
+                        <p>2ª Guerra Mundial e Guerra Fria</p>
+                        <span class="evento-curso">HIST202</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Detalhes do Evento -->
+    <div class="modal-evento" id="modalEvento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-check"></i> Detalhes do Evento</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-info">
+                <div class="info-item">
+                    <i class="fas fa-heading"></i>
+                    <div>
+                        <h4 id="modalTitulo">Título do Evento</h4>
+                        <p id="modalDescricao">Descrição detalhada do evento</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Data e Hora</h4>
+                        <p id="modalDataHora">Segunda-feira, 15 de Dezembro, 08:00 - 10:00</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-book"></i>
+                    <div>
+                        <h4>Curso</h4>
+                        <p id="modalCurso">Cálculo I - MAT001</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h4>Local</h4>
+                        <p id="modalLocal">Sala 205 - Bloco A</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <h4>Professor</h4>
+                        <p id="modalProfessor">Prof. Carlos Silva</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-sticky-note"></i>
+                    <div>
+                        <h4>Observações</h4>
+                        <p id="modalObservacoes">Trazer calculadora e material de apoio. A prova será individual e sem consulta.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="acoes-evento">
+                <button class="btn-acao btn-primario" id="btnAdicionarLembrete">
+                    <i class="fas fa-bell"></i>
+                    Adicionar Lembrete
+                </button>
+                <button class="btn-acao btn-secundario" id="btnFecharModal">
+                    <i class="fas fa-times"></i>
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados de exemplo para eventos
+        const eventosExemplo = [
+            { 
+                id: 1, 
+                dia: 15, 
+                mes: 11, // Dezembro (0-indexed)
+                ano: 2024,
+                titulo: "Cálculo I", 
+                descricao: "Aula sobre derivadas e integrais", 
+                tipo: "aula",
+                hora: "08:00 - 10:00",
+                curso: "MAT001",
+                local: "Sala 205 - Bloco A",
+                professor: "Prof. Carlos Silva",
+                observacoes: "Trazer calculadora e material de apoio"
+            },
+            { 
+                id: 2, 
+                dia: 15, 
+                mes: 11,
+                ano: 2024,
+                titulo: "Entrega Trabalho Python", 
+                descricao: "Projeto final - Sistema de gerenciamento", 
+                tipo: "trabalho",
+                hora: "14:00",
+                curso: "PROG101",
+                local: "Online - Plataforma Moodle",
+                professor: "Prof. Ana Costa",
+                observacoes: "Enviar arquivo .zip com código fonte e relatório"
+            },
+            { 
+                id: 3, 
+                dia: 15, 
+                mes: 11,
+                ano: 2024,
+                titulo: "Prova História", 
+                descricao: "2ª Guerra Mundial e Guerra Fria", 
+                tipo: "prova",
+                hora: "16:00 - 18:00",
+                curso: "HIST202",
+                local: "Sala 108 - Bloco B",
+                professor: "Prof. Roberto Alves",
+                observacoes: "Prova individual, sem consulta"
+            },
+            { 
+                id: 4, 
+                dia: 20, 
+                mes: 11,
+                ano: 2024,
+                titulo: "Reunião de Grupo", 
+                descricao: "Apresentação do projeto de pesquisa", 
+                tipo: "trabalho",
+                hora: "09:00 - 11:00",
+                curso: "PESQ301",
+                local: "Sala 305 - Bloco C",
+                professor: "Prof. Maria Santos",
+                observacoes: "Trazer slides da apresentação"
+            },
+            { 
+                id: 5, 
+                dia: 25, 
+                mes: 11,
+                ano: 2024,
+                titulo: "Natal", 
+                descricao: "Feriado Nacional", 
+                tipo: "feriado",
+                hora: "Dia inteiro",
+                curso: "-",
+                local: "-",
+                professor: "-",
+                observacoes: "Recesso escolar"
+            }
+        ];
+
+        // Variáveis globais
+        let dataAtual = new Date();
+        let filtroAtivo = 'todos';
+        let eventosDoDia = [];
+
+        // Elementos DOM
+        const diasMesEl = document.getElementById('diasMes');
+        const mesAnoEl = document.getElementById('mesAno');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const todayBtn = document.getElementById('todayBtn');
+        const filtrosBtns = document.querySelectorAll('.filtro-btn');
+        const listaEventosEl = document.getElementById('listaEventos');
+        const modalEventoEl = document.getElementById('modalEvento');
+        const closeModalBtn = document.getElementById('closeModal');
+        const btnFecharModal = document.getElementById('btnFecharModal');
+        const btnAdicionarLembrete = document.getElementById('btnAdicionarLembrete');
+        const badgeCalendarioEl = document.getElementById('badgeCalendario');
+
+        // Atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+            const opcoes = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            
+            const dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
+            document.getElementById('dataHora').textContent = dataFormatada;
+        }
+
+        // Gerar calendário
+        function gerarCalendario() {
+            diasMesEl.innerHTML = '';
+            
+            const ano = dataAtual.getFullYear();
+            const mes = dataAtual.getMonth();
+            
+            // Atualizar título
+            const opcoesMes = { month: 'long', year: 'numeric' };
+            mesAnoEl.textContent = dataAtual.toLocaleDateString('pt-BR', opcoesMes);
+            
+            // Primeiro dia do mês
+            const primeiroDia = new Date(ano, mes, 1);
+            // Último dia do mês
+            const ultimoDia = new Date(ano, mes + 1, 0);
+            // Dia da semana do primeiro dia (0 = Domingo, 1 = Segunda, etc.)
+            const primeiroDiaSemana = primeiroDia.getDay();
+            
+            // Dias do mês anterior
+            const ultimoDiaMesAnterior = new Date(ano, mes, 0).getDate();
+            
+            // Adicionar dias do mês anterior
+            for (let i = primeiroDiaSemana - 1; i >= 0; i--) {
+                const dia = ultimoDiaMesAnterior - i;
+                const diaEl = document.createElement('div');
+                diaEl.className = 'dia outro-mes';
+                diaEl.innerHTML = `<div class="dia-numero">${dia}</div>`;
+                diasMesEl.appendChild(diaEl);
+            }
+            
+            // Adicionar dias do mês atual
+            for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+                const diaEl = document.createElement('div');
+                diaEl.className = 'dia';
+                diaEl.dataset.dia = dia;
+                diaEl.dataset.mes = mes;
+                diaEl.dataset.ano = ano;
+                
+                // Verificar se é hoje
+                const hoje = new Date();
+                if (dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear()) {
+                    diaEl.classList.add('hoje');
+                }
+                
+                // Adicionar número do dia
+                diaEl.innerHTML = `<div class="dia-numero">${dia}</div>`;
+                
+                // Adicionar eventos do dia
+                const eventosDoDia = eventosExemplo.filter(evento => 
+                    evento.dia === dia && 
+                    evento.mes === mes && 
+                    evento.ano === ano &&
+                    (filtroAtivo === 'todos' || evento.tipo === filtroAtivo)
+                );
+                
+                eventosDoDia.forEach(evento => {
+                    const eventoEl = document.createElement('div');
+                    eventoEl.className = `evento ${evento.tipo}`;
+                    eventoEl.textContent = evento.titulo;
+                    eventoEl.title = `${evento.titulo} - ${evento.hora}`;
+                    eventoEl.dataset.eventoId = evento.id;
+                    
+                    eventoEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        mostrarDetalhesEvento(evento);
+                    });
+                    
+                    diaEl.appendChild(eventoEl);
+                });
+                
+                // Clique no dia
+                diaEl.addEventListener('click', () => {
+                    selecionarDia(dia, mes, ano);
+                });
+                
+                diasMesEl.appendChild(diaEl);
+            }
+            
+            // Adicionar dias do próximo mês para completar a grade
+            const totalCells = 42; // 6 semanas * 7 dias
+            const cellsUsed = primeiroDiaSemana + ultimoDia.getDate();
+            const cellsRemaining = totalCells - cellsUsed;
+            
+            for (let dia = 1; dia <= cellsRemaining; dia++) {
+                const diaEl = document.createElement('div');
+                diaEl.className = 'dia outro-mes';
+                diaEl.innerHTML = `<div class="dia-numero">${dia}</div>`;
+                diasMesEl.appendChild(diaEl);
+            }
+            
+            // Atualizar eventos do dia atual
+            atualizarEventosDoDia();
+        }
+
+        // Selecionar dia
+        function selecionarDia(dia, mes, ano) {
+            // Remover seleção anterior
+            document.querySelectorAll('.dia.selecionado').forEach(el => {
+                el.classList.remove('selecionado');
+            });
+            
+            // Adicionar seleção atual
+            const diaEl = document.querySelector(`.dia[data-dia="${dia}"][data-mes="${mes}"][data-ano="${ano}"]`);
+            if (diaEl) {
+                diaEl.classList.add('selecionado');
+            }
+            
+            // Atualizar eventos do dia selecionado
+            eventosDoDia = eventosExemplo.filter(evento => 
+                evento.dia === dia && 
+                evento.mes === mes && 
+                evento.ano === ano
+            );
+            
+            atualizarListaEventos(dia, mes, ano);
+        }
+
+        // Atualizar lista de eventos do dia
+        function atualizarListaEventos(dia, mes, ano) {
+            listaEventosEl.innerHTML = '';
+            
+            if (eventosDoDia.length === 0) {
+                listaEventosEl.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--cinza-medio);">
+                        <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>Nenhum evento para este dia</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            eventosDoDia.forEach(evento => {
+                const eventoItemEl = document.createElement('div');
+                eventoItemEl.className = `evento-item ${evento.tipo}`;
+                eventoItemEl.innerHTML = `
+                    <div class="evento-hora">${evento.hora}</div>
+                    <div class="evento-info">
+                        <h4>${evento.titulo}</h4>
+                        <p>${evento.descricao}</p>
+                        <span class="evento-curso">${evento.curso}</span>
+                    </div>
+                `;
+                
+                eventoItemEl.addEventListener('click', () => {
+                    mostrarDetalhesEvento(evento);
+                });
+                
+                listaEventosEl.appendChild(eventoItemEl);
+            });
+        }
+
+        // Atualizar eventos do dia atual
+        function atualizarEventosDoDia() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const mes = hoje.getMonth();
+            const ano = hoje.getFullYear();
+            
+            eventosDoDia = eventosExemplo.filter(evento => 
+                evento.dia === dia && 
+                evento.mes === mes && 
+                evento.ano === ano
+            );
+            
+            atualizarListaEventos(dia, mes, ano);
+            atualizarBadgeCalendario();
+        }
+
+        // Atualizar badge do calendário
+        function atualizarBadgeCalendario() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const mes = hoje.getMonth();
+            const ano = hoje.getFullYear();
+            
+            const eventosHoje = eventosExemplo.filter(evento => 
+                evento.dia === dia && 
+                evento.mes === mes && 
+                evento.ano === ano
+            );
+            
+            if (badgeCalendarioEl) {
+                badgeCalendarioEl.textContent = eventosHoje.length;
+            }
+        }
+
+        // Mostrar detalhes do evento
+        function mostrarDetalhesEvento(evento) {
+            document.getElementById('modalTitulo').textContent = evento.titulo;
+            document.getElementById('modalDescricao').textContent = evento.descricao;
+            document.getElementById('modalDataHora').textContent = 
+                `${evento.dia}/${evento.mes + 1}/${evento.ano} - ${evento.hora}`;
+            document.getElementById('modalCurso').textContent = evento.curso;
+            document.getElementById('modalLocal').textContent = evento.local;
+            document.getElementById('modalProfessor').textContent = evento.professor;
+            document.getElementById('modalObservacoes').textContent = evento.observacoes;
+            
+            modalEventoEl.style.display = 'flex';
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar data e hora
+            atualizarDataHora();
+            setInterval(atualizarDataHora, 1000);
+            
+            // Gerar calendário inicial
+            gerarCalendario();
+            
+            // Event listeners para navegação do calendário
+            prevMonthBtn.addEventListener('click', () => {
+                dataAtual.setMonth(dataAtual.getMonth() - 1);
+                gerarCalendario();
+            });
+            
+            nextMonthBtn.addEventListener('click', () => {
+                dataAtual.setMonth(dataAtual.getMonth() + 1);
+                gerarCalendario();
+            });
+            
+            todayBtn.addEventListener('click', () => {
+                dataAtual = new Date();
+                gerarCalendario();
+            });
+            
+            // Event listeners para filtros
+            filtrosBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filtrosBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filtroAtivo = this.dataset.tipo;
+                    gerarCalendario();
+                });
+            });
+            
+            // Event listeners para o modal
+            closeModalBtn.addEventListener('click', () => {
+                modalEventoEl.style.display = 'none';
+            });
+            
+            btnFecharModal.addEventListener('click', () => {
+                modalEventoEl.style.display = 'none';
+            });
+            
+            btnAdicionarLembrete.addEventListener('click', () => {
+                alert('Lembrete adicionado com sucesso!');
+                modalEventoEl.style.display = 'none';
+            });
+            
+            // Fechar modal ao clicar fora
+            modalEventoEl.addEventListener('click', (e) => {
+                if (e.target === modalEventoEl) {
+                    modalEventoEl.style.display = 'none';
+                }
+            });
+            
+            // Menu interativo
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') {
+                        e.preventDefault();
+                    }
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

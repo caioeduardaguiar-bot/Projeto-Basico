@@ -1,0 +1,114 @@
+{% extends "aluno/base_aluno.html" %}
+
+{% block title %}Meu Perfil{% endblock %}
+{% block page_title %}Meu Perfil{% endblock %}
+{% block page_subtitle %}Gerencie suas informações pessoais{% endblock %}
+
+{% block styles %}
+<style>
+    .perfil-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    @media (max-width: 768px) { .perfil-container { grid-template-columns: 1fr; } }
+    .card-perfil { background: var(--branco); border-radius: 15px; padding: 30px; box-shadow: 0 6px 15px var(--sombra); }
+    .perfil-avatar-grande { width: 120px; height: 120px; border-radius: 50%; background: var(--gradiente-azul); display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; color: white; font-size: 3rem; }
+    .info-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid var(--cinza-claro); }
+    .info-icon { width: 40px; color: var(--azul-secundario); font-size: 1.2rem; }
+    .info-content h4 { font-size: 0.9rem; color: var(--cinza-medio); }
+    .info-content p { font-size: 1.1rem; color: var(--azul-principal); font-weight: 500; }
+    .btn-editar { background: var(--azul-secundario); color: white; border: none; padding: 10px 20px; border-radius: 8px; width: 100%; margin-top: 20px; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; transition: background 0.3s; }
+    .btn-editar:hover { background: var(--azul-principal); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="perfil-container">
+    <div class="card-perfil">
+        <div class="perfil-avatar-grande">
+            <span>{{ aluno.nome_completo[:2]|upper if aluno.nome_completo else aluno.apelido[:2]|upper if aluno.apelido else 'US' }}</span>
+        </div>
+        <h3 style="text-align: center; margin-bottom: 20px; color: var(--azul-principal);">
+            {{ aluno.nome_completo or aluno.apelido or session.usuario }}
+        </h3>
+        
+        <div class="info-item">
+            <div class="info-icon"><i class="fas fa-envelope"></i></div>
+            <div class="info-content">
+                <h4>Email</h4>
+                <p>{{ aluno.email }}</p>
+            </div>
+        </div>
+        
+        <div class="info-item">
+            <div class="info-icon"><i class="fas fa-user-tag"></i></div>
+            <div class="info-content">
+                <h4>Apelido</h4>
+                <p>{{ aluno.apelido }}</p>
+            </div>
+        </div>
+        
+        <div class="info-item">
+            <div class="info-icon"><i class="fas fa-id-card"></i></div>
+            <div class="info-content">
+                <h4>Matrícula</h4>
+                <p>{{ aluno.id }}</p>
+            </div>
+        </div>
+        
+        {% if aluno.telefone %}
+        <div class="info-item">
+            <div class="info-icon"><i class="fas fa-phone"></i></div>
+            <div class="info-content">
+                <h4>Telefone</h4>
+                <p>{{ aluno.telefone }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <a href="{{ url_for('editar_perfil_aluno') }}" class="btn-editar">
+            <i class="fas fa-edit"></i> Editar Informações
+        </a>
+    </div>
+
+    <!-- Substitua esta parte no perfil_aluno.html -->
+
+
+    <div class="card-perfil">
+        <h3 style="color: var(--azul-principal); margin-bottom: 25px;">Estatísticas Acadêmicas</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+            <div style="text-align: center; background: var(--azul-claro); padding: 20px; border-radius: 10px;">
+                <h2 style="color: var(--azul-secundario); font-size: 2.5rem; margin-bottom: 10px;">
+                    8.5
+                </h2>
+                <p style="color: var(--azul-principal); font-weight: 500;">Média Geral</p>
+            </div>
+            <div style="text-align: center; background: var(--verde-claro); padding: 20px; border-radius: 10px;">
+                <h2 style="color: var(--verde); font-size: 2.5rem; margin-bottom: 10px;">
+                    85%
+                </h2>
+                <p style="color: var(--verde-escuro); font-weight: 500;">Frequência</p>
+            </div>
+        </div>
+        
+        {% if estatisticas.media_geral == 8,5 and estatisticas.frequencia == 85 %}
+        <div style="margin-top: 20px; padding: 15px; background: var(--cinza-muito-claro); border-radius: 8px;">
+            <p style="color: var(--cinza-medio); text-align: center; margin: 0;">
+                <i class="fas fa-info-circle"></i> Estatísticas serão atualizadas conforme seu progresso
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Adicione este script para atualizar a sessão após edição -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se houve atualização recente via parâmetro na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('atualizado')) {
+        // Forçar recarregamento dos dados da sessão
+        setTimeout(() => {
+            window.location.href = "{{ url_for('perfil_aluno') }}";
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

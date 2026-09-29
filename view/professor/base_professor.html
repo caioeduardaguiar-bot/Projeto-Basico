@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portal do Professor{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== ESTILOS GERAIS (Reutilizando estrutura do aluno) ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        :root {
+            /* Cores do Professor (Um pouco mais sóbrias/escuras para diferenciar) */
+            --cor-menu-bg: #2c3e50; 
+            --cor-destaque: #e67e22; /* Laranja para professores */
+            --cor-fundo: #f4f6f9;
+            --branco: #ffffff;
+            --cinza-texto: #333;
+            --cinza-claro: #bdc3c7;
+        }
+
+        body { background-color: var(--cor-fundo); color: var(--cinza-texto); display: flex; min-height: 100vh; }
+
+        /* MENU LATERAL */
+        .menu-lateral {
+            width: 260px; background: var(--cor-menu-bg); position: fixed; left: 0; top: 0; bottom: 0;
+            color: var(--branco); transition: 0.3s; z-index: 1000; overflow-y: auto;
+        }
+        
+        .menu-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .avatar-prof { 
+            width: 80px; height: 80px; background: var(--cor-destaque); border-radius: 50%; 
+            margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; 
+        }
+        
+        .menu-nav { padding: 20px 0; }
+        .menu-item {
+            display: flex; align-items: center; padding: 15px 25px; color: rgba(255,255,255,0.8);
+            text-decoration: none; transition: 0.3s; border-left: 4px solid transparent;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255,255,255,0.05); color: var(--branco); border-left-color: var(--cor-destaque);
+        }
+        .menu-item i { margin-right: 15px; width: 25px; text-align: center; }
+
+        .btn-sair {
+            display: flex; align-items: center; justify-content: center; margin: 20px; padding: 10px;
+            background: #c0392b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;
+        }
+
+        /* CONTEÚDO */
+        .conteudo-principal { margin-left: 260px; padding: 30px; width: 100%; }
+        
+        .top-bar { 
+            background: var(--branco); padding: 20px 30px; border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Flash Messages */
+        .flash-msg {
+            padding: 15px; margin-bottom: 20px; border-radius: 5px; color: white;
+            background: var(--cor-destaque); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .menu-lateral { width: 100%; height: auto; position: relative; }
+            .conteudo-principal { margin-left: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="menu-lateral">
+        <div class="menu-header">
+            <div class="avatar-prof">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h3>Portal Professor</h3>
+            <p>Olá, {{ session.usuario }}</p>
+        </div>
+
+        <div class="menu-nav">
+            <a href="{{ url_for('home_professor') }}" class="menu-item {% if request.endpoint == 'home_professor' %}active{% endif %}">
+                <i class="fas fa-home"></i> Início
+            </a>
+            <a href="{{ url_for('lista_alunos') }}" class="menu-item {% if request.endpoint == 'lista_alunos'%}active{% endif %}">
+                <i class="fas fa-users"></i> Gerenciar Alunos
+            </a>
+
+            <a href="{{ url_for('seus_cursos') }}" class="menu-item {% if request.endpoint == 'seus_cursos' or request.endpoint == 'acessar_curso' %}active{% endif %}">
+                <i class="fas fa-book"></i> Seus Cursos
+            </a>
+             
+            <a href="{{ url_for('calendario_professor') }}" class="menu-item {% if request.endpoint == 'calendario_professor' %}active{% endif %}">
+        <i class="fas fa-calendar-alt"></i> Calendário
+            </a>
+
+            <a href="{{ url_for('perfil_professor') }}" class="menu-item {% if request.endpoint == 'perfil_professor' %}active{% endif %}">
+    <i class="fas fa-user"></i> Meu Perfil
+            </a>
+
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="btn-sair">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </a>
+    </nav>
+
+    <main class="conteudo-principal">
+        <div class="top-bar">
+            <div>
+                <h2>{% block page_title %}Painel do Professor{% endblock %}</h2>
+                <p style="color: #777;">{% block page_subtitle %}Gerencie suas turmas e alunos{% endblock %}</p>
+            </div>
+            <div id="dataHoje"></div>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        document.getElementById('dataHoje').innerText = new Date().toLocaleDateString('pt-BR');
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
